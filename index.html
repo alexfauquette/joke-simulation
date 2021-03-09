@@ -1,1 +1,185 @@
-<h1>Hello</h1>
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="http://www.ljll.math.upmc.fr/lehyaric/ffjs/jquery-1.11.2.min.js"></script>
+    <script
+      src="http://www.ljll.math.upmc.fr/lehyaric/ffjs/17.1/freefem.min.js"
+      type="text/javascript"
+    ></script>
+    <script
+      src="http://www.ljll.math.upmc.fr/lehyaric/ffjs/17.1/ffapi.js"
+      type="text/javascript"
+    ></script>
+  </head>
+  <body>
+    <textarea class="ffjs">
+    
+        load "ppm2rnm"
+
+
+// ========================================================
+// Création du maillage
+// ========================================================
+
+// Paramètres
+int nbtj=20; // Nb de triangles autour des avions
+int nbtbord=10; // Nb de triangles aux bords du domaine
+
+
+int nx = 50;
+int ny = 50;
+
+// Maillage pour isoline
+mesh Th = square(nx-1, ny-1, [(nx-1)*(x), (ny-1)*(1-y)]);
+
+// Fespace
+fespace Vh(Th, P1);
+
+
+
+// Premier avion
+border jet1(t=0, 3.14)
+{
+    x = nx/2+10*cos(2*t);y = ny/2+10*sin(2*t);label=1;
+}
+
+
+border C01(t=0, 1){x = t*(nx-1);y = 0;label=3;}  // Sud
+border C02(t=0, 1){x = nx-1;y = t*(ny-1);label=4;}  // Est
+border C03(t=0, 1){x = (1-t)*(nx-1);y = (ny-1);label=5;}  // Nord
+border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
+
+// Maillage pour les calculs
+Th = buildmesh(jet1(-nbtj)+C01(nbtbord)+C02(nbtbord)+C03(nbtbord)+C04(nbtbord));
+
+
+plot(Th, ps="figure.eps");
+
+
+
+
+// ========================================================
+// Résolution du problème
+// ========================================================
+
+// Paramètres
+// real nu = 1.56e-5;
+real nu = 1.;
+real dt = 0.1;
+real T = 1.;  // Temps final
+int i;
+int choix = 2;  // Pour le choix du schéma
+
+// Fespace
+fespace Uh(Th,P2);  // Espace pour la vélocité
+Uh u1, u2, v1, v2;
+Uh u1old, u2old;
+
+fespace Ph(Th,P1);  // Espace pour la pression
+Ph p, q;
+
+// Problème de Navier-Stokes
+// Par linéarisation
+problem NavierStokes1(u1, u2, p, v1, v2, q, solver=Crout, init = i)
+    =   int2d(Th)
+        (
+                (u1*v1 + u2*v2)/dt
+            +   nu*(dx(u1)*dx(v1) + dy(u1)*dy(v1)
+                +   dx(u2)*dx(v2) + dy(u2)*dy(v2))
+            - p*dx(v1) - p*dy(v2)
+            - q*dx(u1) - q*dy(u2)
+            - p*q*(0.000001)  // Pour la stabilité et permet d'utiliser le solveur Crout
+        )
+      + int2d(Th)
+        (
+            - u1old*v1/dt - u2old*v2/dt
+        )
+      + int2d(Th)
+        (
+            u1old*(dx(u1)*v1 + dy(u1)*v2)
+            + u2old*(dx(u2)*v1 + dy(u2)*v2)
+        )
+      + on(1, 2, u1=0, u2=0)  // Conditions de Dirichlet sur les avions
+      + on(4,5,6, u1=0, u2=-10)  // Conditions de Dirichlet à l'Est, au Nord et à l'Ouest
+    ;
+
+// Méthode des caractéristiques
+problem NavierStokes2(u1, u2, p, v1, v2, q, solver = Crout, init = i)
+    =   int2d(Th)
+        (
+                (u1*v1 + u2*v2)/dt
+            +   nu*(dx(u1)*dx(v1) + dy(u1)*dy(v1)
+                +   dx(u2)*dx(v2) + dy(u2)*dy(v2))
+            - p*dx(v1) - p*dy(v2)
+            - q*dx(u1) - q*dy(u2)
+            - p*q*(0.000001)  // Pour la stabilité et permet d'utiliser le solveur Crout
+        )
+      + int2d(Th)
+        (
+            -   convect([u1old, u2old], -dt, u1old)*v1/dt
+            -   convect([u1old, u2old], -dt, u2old)*v2/dt
+        )
+      + on(1, 2, u1=0, u2=0)  // Conditions de Dirichlet sur les avions
+      + on(4,5,6, u1=0, u2=-10)  // Conditions de Dirichlet à l'Est, au Nord et à l'Ouest
+    ;
+
+
+// Boucle pour le temps
+u1 = 0;
+u2 = 0;
+p=0;
+
+i = 0;
+for (real t = 0; t <= T; t += dt)
+{
+    if (i%10 == 0) i=0;  // On recalcule la matrice tous les 10 pas de temps
+    if (choix == 1)
+    {
+        u1old = u1;
+        u2old = u2;
+        NavierStokes1;           
+    }
+        
+    else if (choix == 2)
+    {
+        u1old = u1;
+        u2old = u2;
+        NavierStokes2;
+    }
+    i++;
+}
+plot([u1,u2],p, cmm="t = "+T, value=1);
+
+
+
+    </textarea>
+
+    <button type="button" onclick="ffjs_evaluate()">Run</button>
+    <!-- <button type="button" onclick="ffjs_reset()">Reset</button> -->
+    <div style="display: flex">
+      <canvas
+        class="ffjs_graph"
+        data-ffjs="figure.eps"
+        width="500px"
+        height="500px"
+        style="width: 100%"
+      >
+        (message for older browsers where canvas is not implemented)
+      </canvas>
+      <canvas
+        class="ffjs_graph"
+        data-ffjs="default"
+        width="500px"
+        height="500px"
+        style="width: 100%"
+      >
+        (message for older browsers where canvas is not implemented)
+      </canvas>
+    </div>
+    <canvas class="ffjs_graph" data-ffjs="default" width="500px" height="500px">
+      (message for older browsers where canvas is not implemented)
+    </canvas>
+    <div id="ffjs_stdout" style="font-family: monospace"></div>
+    <div id="ffjs_stderr" style="font-family: monospace"></div>
+  </body>
+</html>
