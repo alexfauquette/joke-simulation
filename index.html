@@ -1,15 +1,9 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <script src="http://www.ljll.math.upmc.fr/lehyaric/ffjs/jquery-1.11.2.min.js"></script>
-    <script
-      src="http://www.ljll.math.upmc.fr/lehyaric/ffjs/17.1/freefem.min.js"
-      type="text/javascript"
-    ></script>
-    <script
-      src="http://www.ljll.math.upmc.fr/lehyaric/ffjs/17.1/ffapi.js"
-      type="text/javascript"
-    ></script>
+    <script src="lib/jquery-1.11.2.min.js"></script>
+    <script src="lib/freefem.min.js" type="text/javascript"></script>
+    <script src="lib/ffapi.js" type="text/javascript"></script>
   </head>
   <body>
     <textarea class="ffjs">
@@ -176,9 +170,6 @@ plot([u1,u2],p, cmm="t = "+T, value=1);
         (message for older browsers where canvas is not implemented)
       </canvas>
     </div>
-    <canvas class="ffjs_graph" data-ffjs="default" width="500px" height="500px">
-      (message for older browsers where canvas is not implemented)
-    </canvas>
     <div id="ffjs_stdout" style="font-family: monospace"></div>
     <div id="ffjs_stderr" style="font-family: monospace"></div>
   </body>
