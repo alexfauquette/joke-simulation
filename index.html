@@ -267,13 +267,10 @@ plot([u1,u2],p, cmm="t = "+T, value=1);
 
         `;
 
-        console.log(rep);
         return rep;
       }
 
       c.onmousedown = function (ev) {
-        console.log(ev.layerX);
-
         ctx.beginPath();
         ctx.arc(ev.layerX, ev.layerY, 3, 0, Math.PI * 2, true);
         ctx.stroke();
@@ -287,6 +284,42 @@ plot([u1,u2],p, cmm="t = "+T, value=1);
         points.push({ x: ev.layerX, y: ev.layerY });
 
         codeFreeFem.innerHTML = getShapes(points);
+      };
+
+      c.onmousemove = function (ev) {
+        if (points.length == 0) {
+          return null;
+        }
+        ctx.clearRect(0, 0, c.width, c.height);
+
+        ctx.beginPath();
+        ctx.strokeStyle = "green";
+        ctx.moveTo(points[0].x, points[0].y);
+        for (let i = 0; i < points.length; i++) {
+          ctx.lineTo(points[i].x, points[i].y);
+          ctx.arc(points[i].x, points[i].y, 3, 0, Math.PI * 2, true);
+        }
+        ctx.closePath();
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(points[0].x, points[0].y);
+        ctx.lineTo(ev.layerX, ev.layerY);
+        ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y);
+
+        ctx.strokeStyle = "red";
+
+        ctx.stroke();
+      };
+      c.onmouseleave = function () {
+        ctx.clearRect(0, 0, c.width, c.height);
+        ctx.beginPath();
+        ctx.moveTo(points[0].x, points[0].y);
+        for (let i = 0; i < points.length; i++) {
+          ctx.lineTo(points[i].x, points[i].y);
+        }
+        ctx.closePath();
+        ctx.fill();
       };
 
       function clearDrawing() {
