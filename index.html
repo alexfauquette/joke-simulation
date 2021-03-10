@@ -182,6 +182,7 @@ plot([u1,u2],p, cmm="t = "+T, value=1);
     </textarea>
 
     <button type="button" onclick="ffjs_evaluate()">Run</button>
+    <button type="button" onclick="clearDrawing()">Clear</button>
     <!-- <button type="button" onclick="ffjs_reset()">Reset</button> -->
 
     <canvas
@@ -287,6 +288,11 @@ plot([u1,u2],p, cmm="t = "+T, value=1);
 
         codeFreeFem.innerHTML = getShapes(points);
       };
+
+      function clearDrawing() {
+        points = [];
+        ctx.clearRect(0, 0, c.width, c.height);
+      }
     </script>
   </body>
 </html>
