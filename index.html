@@ -2,13 +2,14 @@
 <html>
   <head>
     <script src="lib/jquery-1.11.2.min.js"></script>
+    <script src="lib/marchingsquares.js"></script>
+
     <script src="lib/freefem.min.js" type="text/javascript"></script>
     <script src="lib/ffapi.js" type="text/javascript"></script>
     <!-- <script src="lib/opencv.js" type="text/javascript"></script> -->
   </head>
   <body>
     <textarea class="ffjs">
-      load "isoline"
         load "ppm2rnm"
 
 
@@ -17,7 +18,7 @@
 // ========================================================
 
 // Paramètres
-int nbtj=50; // Nb de triangles autour des avions
+int nbtj=20; // Nb de triangles autour de chaque objet
 int nbtbord=10; // Nb de triangles aux bords du domaine
 
 
@@ -41,47 +42,10 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
 
 
 
-</textarea
-    >
+    </textarea>
     <textarea id="buildShape" class="ffjs"> </textarea>
     <textarea class="ffjs">
-
-//border jet1(t=0, 1)
-//{
-//    int c=0;
-//    int i0=be[2*c], i1=be[2*c+1]-1;
-//    P=Curve(Curves, i0, i1, t);
-//    label=1;
-//}
-border jet1(t=0, 1)
- {
-    int c=0;
-    int i0=be[2*c], i1=be[2*c+1]-1;
-    int i = i0;
-    if( t== 1){
-        x = Curves(0, i1);
-        y = Curves(1, i1);
-    }
-    else{
-    while(Curves(2, i) <= Curves(2, i1) * t ){
-        i += 1;
-    }
-        x=(Curves(2, i) - Curves(2, i1)*t)/(Curves(2, i) - Curves(2, i-1)) * Curves(0, i-1) + (Curves(2, i1)*t - Curves(2, i-1))/(Curves(2, i) - Curves(2, i-1)) * Curves(0, i);
-        y=(Curves(2, i) - Curves(2, i1)*t)/(Curves(2, i) - Curves(2, i-1)) * Curves(1, i-1) + (Curves(2, i1)*t - Curves(2, i-1))/(Curves(2, i) - Curves(2, i-1)) * Curves(1, i);
-
-    }
-    
-    label=1;
-}
-
-
-// Maillage pour les calculs
-Th = buildmesh(jet1(-nbtj)+C01(nbtbord)+C02(nbtbord)+C03(nbtbord)+C04(nbtbord));
-
-
 plot(Th, ps="figure.eps");
-
-
 
 
 // ========================================================
@@ -145,7 +109,7 @@ problem NavierStokes2(u1, u2, p, v1, v2, q, solver = Crout, init = i)
             -   convect([u1old, u2old], -dt, u1old)*v1/dt
             -   convect([u1old, u2old], -dt, u2old)*v2/dt
         )
-      + on(1, 2, u1=0, u2=0)  // Conditions de Dirichlet sur les avions
+      + on(1, 2, 7, 8, 9, 10, u1=0, u2=0)  // Conditions de Dirichlet sur les avions
       + on(4,5,6, u1=0, u2=-10)  // Conditions de Dirichlet à l'Est, au Nord et à l'Ouest
     ;
 
@@ -181,8 +145,9 @@ plot([u1,u2],p, cmm="t = "+T, value=1);
 
     </textarea>
 
-    <button type="button" onclick="ffjs_evaluate()">Run</button>
+    <button type="button" onclick="run()">Run</button>
     <button type="button" onclick="clearDrawing()">Clear</button>
+    <!-- <button type="button" onclick="getIsoline()">get isoline</button> -->
     <!-- <button type="button" onclick="ffjs_reset()">Reset</button> -->
 
     <canvas
@@ -222,7 +187,7 @@ plot([u1,u2],p, cmm="t = "+T, value=1);
 
       var codeFreeFem = document.getElementById("buildShape");
 
-      function getShapes(points) {
+      function getShape(points, curveIndex) {
         if (points.length <= 1) {
           return "";
         }
@@ -233,98 +198,141 @@ plot([u1,u2],p, cmm="t = "+T, value=1);
             (points[0].y - points[points.length - 1].y) ** 2
         );
 
-        const rep = `real[int, int] Curves(3, ${nbPoints + 1});
-        int[int] be(2);
-        be(0) = 0;
-        be(1) = ${nbPoints + 1};
+        let rep = "";
 
-        ${points
-          .map(({ x, y }, index) => {
-            if (index === 0) {
-              return `Curves(0, 0) = ${(x + 5) / 10};
-        Curves(1, 0) = ${(305 - y) / 10};
-        Curves(2, 0) = 0.;
+        rep += `
+              real[int, int] Curves${curveIndex}(3, ${nbPoints + 1});
+              
 
-            `;
-            } else {
-              const dx = x - points[index - 1].x;
-              const dy = y - points[index - 1].y;
-              const d = Math.sqrt(dx ** 2 + dy ** 2);
-              totalDist += d;
-              return `
-        Curves(0, ${index}) = ${(x + 5) / 10};
-        Curves(1, ${index}) = ${(305 - y) / 10};
-        Curves(2, ${index}) = ${totalDist / 10};
+              ${points
+                .map(({ x, y }, index) => {
+                  if (index === 0) {
+                    return `Curves${curveIndex}(0, 0) = ${(x + 5) / 10};
+              Curves${curveIndex}(1, 0) = ${(305 - y) / 10};
+              Curves${curveIndex}(2, 0) = 0.;
 
-            `;
-            }
-          })
-          .join("")}
+                  `;
+                  } else {
+                    const dx = x - points[index - 1].x;
+                    const dy = y - points[index - 1].y;
+                    const d = Math.sqrt(dx ** 2 + dy ** 2);
+                    totalDist += d;
+                    return `
+              Curves${curveIndex}(0, ${index}) = ${(x + 5) / 10};
+              Curves${curveIndex}(1, ${index}) = ${(305 - y) / 10};
+              Curves${curveIndex}(2, ${index}) = ${totalDist / 10};
 
-        Curves(0, ${points.length}) = ${(points[0].x + 5) / 10};
-        Curves(1, ${points.length}) = ${(305 - points[0].y) / 10};
-        Curves(2, ${points.length}) = ${(totalDist + lastDist) / 10};
+                  `;
+                  }
+                })
+                .join("")}
 
-        `;
+              Curves${curveIndex}(0, ${points.length}) = ${
+          (points[0].x + 5) / 10
+        };
+              Curves${curveIndex}(1, ${points.length}) = ${
+          (305 - points[0].y) / 10
+        };
+              Curves${curveIndex}(2, ${points.length}) = ${
+          (totalDist + lastDist) / 10
+        };`;
 
+        rep += `
+        border jet${curveIndex}(t=0, 1)
+       {
+          int c=0;
+          int i = 0;
+          if( t== 1){
+              x = Curves${curveIndex}(0, ${nbPoints});
+              y = Curves${curveIndex}(1, ${nbPoints});
+          }
+          else{
+          while(Curves${curveIndex}(2, i) <= Curves${curveIndex}(2, ${nbPoints}) * t ){
+              i += 1;
+          }
+              x=(Curves${curveIndex}(2, i) - Curves${curveIndex}(2, ${nbPoints})*t)/(Curves${curveIndex}(2, i) - Curves${curveIndex}(2, i-1)) * Curves${curveIndex}(0, i-1) + (Curves${curveIndex}(2, ${nbPoints})*t - Curves${curveIndex}(2, i-1))/(Curves${curveIndex}(2, i) - Curves${curveIndex}(2, i-1)) * Curves${curveIndex}(0, i);
+              y=(Curves${curveIndex}(2, i) - Curves${curveIndex}(2, ${nbPoints})*t)/(Curves${curveIndex}(2, i) - Curves${curveIndex}(2, i-1)) * Curves${curveIndex}(1, i-1) + (Curves${curveIndex}(2, ${nbPoints})*t - Curves${curveIndex}(2, i-1))/(Curves${curveIndex}(2, i) - Curves${curveIndex}(2, i-1)) * Curves${curveIndex}(1, i);
+
+          }
+          label=${curveIndex};
+      }`;
         return rep;
       }
 
-      c.onmousedown = function (ev) {
-        ctx.beginPath();
-        ctx.arc(ev.layerX, ev.layerY, 3, 0, Math.PI * 2, true);
-        ctx.stroke();
+      function getShapes(listOfPoints) {
+        let rep = "";
 
-        ctx.beginPath();
-        ctx.moveTo(ev.layerX, ev.layerY);
-        if (points.length > 0) {
-          ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y);
-          ctx.stroke();
-        }
-        points.push({ x: ev.layerX, y: ev.layerY });
+        let label = 1;
+        const usedLabels = [];
+        listOfPoints.forEach((points) => {
+          const sol = getShape(
+            points.map((_, i) => points[points.length - i - 1]),
+            label
+          );
+          if (sol !== "") {
+            usedLabels.push(label);
+            label += 1;
+            if (label == 3) {
+              label = 7;
+            }
+            rep += sol;
+          }
+        });
 
-        codeFreeFem.innerHTML = getShapes(points);
-      };
+        rep += `
+        // Maillage pour les calculs
+        Th = buildmesh(${usedLabels
+          .map((l) => `jet${l}(-nbtj)`)
+          .join("+")}+C01(nbtbord)+C02(nbtbord)+C03(nbtbord)+C04(nbtbord));
+        `;
+        return rep;
+      }
 
       c.onmousemove = function (ev) {
-        if (points.length == 0) {
-          return null;
+        if (ev.buttons === 1) {
+          ctx.beginPath();
+          ctx.arc(ev.layerX, ev.layerY, 10, 0, Math.PI * 2, true);
+          ctx.fill();
         }
-        ctx.clearRect(0, 0, c.width, c.height);
-
-        ctx.beginPath();
-        ctx.strokeStyle = "green";
-        ctx.moveTo(points[0].x, points[0].y);
-        for (let i = 0; i < points.length; i++) {
-          ctx.lineTo(points[i].x, points[i].y);
-          ctx.arc(points[i].x, points[i].y, 3, 0, Math.PI * 2, true);
-        }
-        ctx.closePath();
-        ctx.stroke();
-
-        ctx.beginPath();
-        ctx.moveTo(points[0].x, points[0].y);
-        ctx.lineTo(ev.layerX, ev.layerY);
-        ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y);
-
-        ctx.strokeStyle = "red";
-
-        ctx.stroke();
-      };
-      c.onmouseleave = function () {
-        ctx.clearRect(0, 0, c.width, c.height);
-        ctx.beginPath();
-        ctx.moveTo(points[0].x, points[0].y);
-        for (let i = 0; i < points.length; i++) {
-          ctx.lineTo(points[i].x, points[i].y);
-        }
-        ctx.closePath();
-        ctx.fill();
       };
 
       function clearDrawing() {
         points = [];
         ctx.clearRect(0, 0, c.width, c.height);
+      }
+
+      function getIsoline() {
+        const data = ctx.getImageData(5, 5, 300, 300).data;
+
+        const newArr = [];
+        for (let i = 0; i < data.length; i += 4 * 300) {
+          newArr.push(
+            Array.from(data.slice(i, i + 4 * 300)).filter(
+              (x, index) => index % 4 === 3
+            )
+          );
+        }
+        const rep = MarchingSquaresJS.isoLines(newArr, [1, 100, 300], {
+          noFrame: true,
+        });
+
+        rep[1].forEach((subRep, index) => {
+          ctx.beginPath();
+          ctx.moveTo(5 + rep[1][0][0], 5 + rep[1][0][1]);
+          subRep.forEach(([x, y]) => {
+            ctx.lineTo(5 + x, 5 + y);
+          });
+          ctx.strokeStyle = "red";
+          ctx.stroke();
+        });
+
+        return rep[1].map((l) => l.map(([x, y]) => ({ x, y })));
+      }
+
+      function run() {
+        const listOfPoints = getIsoline();
+        codeFreeFem.innerHTML = getShapes(listOfPoints);
+        ffjs_evaluate();
       }
     </script>
   </body>
