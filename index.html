@@ -141,9 +141,6 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
     <div>
       <button type="button" onclick="getMaillage();">maillage</button>
       <button type="button" onclick="getSimulation();">simulation</button>
-      <button type="button" onclick="clearDrawing();">Clear</button>
-      <br />
-      <label>nb of points used</label>
       <input
         type="range"
         min="20"
@@ -152,21 +149,21 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
         class="slider"
         oninput="updateShapePoints(this.value)"
       />
+      <label id="discretize">nb of points used</label>
     </div>
-    <!-- <button type="button" onclick="getIsoline()">get isoline</button> -->
-    <!-- <button type="button" onclick="ffjs_reset()">Reset</button> -->
+
+    <div>
+      <button onclick="updateMethodChoice(1)" id="linear">linear solver</button>
+      <button onclick="updateMethodChoice(2)" id="characteristic">
+        characteristic solver
+      </button>
+    </div>
 
     <canvas
       id="inputCanvas"
       style="border: 2px solid red"
       width="300px"
       height="300px"
-    ></canvas>
-    <canvas
-      id="penSize"
-      style="border: 2px solid black"
-      width="50px"
-      height="50px"
     ></canvas>
     <input
       type="range"
@@ -176,11 +173,16 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
       class="slider"
       oninput="updatPenSize(this.value)"
     />
+    <canvas
+      id="penSize"
+      style="border: 2px solid black"
+      width="50px"
+      height="50px"
+    ></canvas>
+    <div>
+      <button type="button" onclick="clearDrawing();">Clear</button>
+    </div>
 
-    <button onclick="updateMethodChoice(1)" id="linear">linear solver</button>
-    <button onclick="updateMethodChoice(2)" id="characteristic">
-      characteristic solver
-    </button>
     <div>
       <p>liquid speed</p>
       <button onclick="updateDirection(3)" id="direction_3">Sud</button>
@@ -196,6 +198,7 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
       class="slider"
       oninput="updateSpeed(this.value)"
     />
+    <label id="speedLabel"></label>
     <!-- results -->
     <div style="display: flex">
       <canvas
@@ -258,9 +261,11 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
 
       function updateSpeed(val) {
         speed = val;
+        document.getElementById("speedLabel").textContent = `speed: ${val}`;
       }
       function updateDirection(val) {
         direction = val;
+
         [3, 4, 5, 6].forEach((x) => {
           if (direction === x) {
             document.getElementById(`direction_${x}`).className = "selected";
@@ -272,6 +277,9 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
 
       function updateShapePoints(val) {
         shapesPoints = val;
+        document.getElementById(
+          "discretize"
+        ).textContent = `use ${val} points for discretization`;
       }
 
       function loadLibraries() {
