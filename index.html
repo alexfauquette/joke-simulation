@@ -43,6 +43,8 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
     <textarea id="buildShape" class="ffjs hiddenCode"> </textarea>
     <textarea class="ffjs hiddenCode">
       plot(Th, ps="figure.eps");
+    </textarea>
+    <textarea class="ffjs hiddenCode" id="runSimulation">
 
 
       // ========================================================
@@ -136,8 +138,21 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
       plot([u1,u2],p, cmm="t = "+T, value=1);
     </textarea>
 
-    <button type="button" onclick="run()">Run</button>
-    <button type="button" onclick="clearDrawing()">Clear</button>
+    <div>
+      <button type="button" onclick="getMaillage();">maillage</button>
+      <button type="button" onclick="getSimulation();">simulation</button>
+      <button type="button" onclick="clearDrawing();">Clear</button>
+      <br />
+      <label>nb of points used</label>
+      <input
+        type="range"
+        min="20"
+        max="150"
+        value="100"
+        class="slider"
+        oninput="updateShapePoints(this.value)"
+      />
+    </div>
     <!-- <button type="button" onclick="getIsoline()">get isoline</button> -->
     <!-- <button type="button" onclick="ffjs_reset()">Reset</button> -->
 
@@ -255,6 +270,10 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
         });
       }
 
+      function updateShapePoints(val) {
+        shapesPoints = val;
+      }
+
       function loadLibraries() {
         const script1 = document.createElement("script");
         const script2 = document.createElement("script");
@@ -271,6 +290,7 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
         };
       }
 
+      var shapesPoints;
       var penSize;
       var choiceMethod;
       var direction;
@@ -280,6 +300,7 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
       updateMethodChoice(1);
       updateSpeed(10);
       updateDirection(3);
+      updateShapePoints(100);
 
       var c = document.getElementById("inputCanvas");
       var ctx = c.getContext("2d");
@@ -356,7 +377,7 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
                 }
                 label=${curveIndex};
             }`;
-        return rep;
+        return [rep, totalDist + lastDist];
       }
 
       function getShapes(listOfPoints) {
@@ -364,13 +385,15 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
 
         let label = 1;
         const usedLabels = [];
+        const dists = [];
         listOfPoints.forEach((points) => {
-          const sol = getShape(
+          const [sol, dist] = getShape(
             points.map((_, i) => points[points.length - i - 1]),
             label
           );
           if (sol !== "") {
             usedLabels.push(label);
+            dists.push(dist);
             label += 1;
             if (label == 3) {
               label = 7;
@@ -408,10 +431,15 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
               real Vx = ${Vx};
               real Vy = ${Vy};
       `;
+
+        let cumDist = dists.reduce((a, b) => a + b, 0);
+        const nbPoints = dists.map((d) =>
+          Math.max(5, Math.round((shapesPoints * d) / cumDist))
+        );
         rep += `
               // Maillage pour les calculs
               Th = buildmesh(${usedLabels
-                .map((l) => `jet${l}(-nbtj)`)
+                .map((l, index) => `jet${l}(-${nbPoints[index]})`)
                 .join(
                   "+"
                 )}+C01(nbtbord)+C02(nbtbord)+C03(nbtbord)+C04(nbtbord));
@@ -459,6 +487,14 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
         const listOfPoints = getIsoline();
         codeFreeFem.innerHTML = getShapes(listOfPoints);
         ffjs_evaluate();
+      }
+      function getMaillage() {
+        document.getElementById("runSimulation").classList.remove("ffjs");
+        run();
+      }
+      function getSimulation() {
+        document.getElementById("runSimulation").classList.add("ffjs");
+        run();
       }
     </script>
   </body>
