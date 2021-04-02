@@ -299,33 +299,6 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
         );
 
         let rep = "";
-        rep += `int choix = ${choiceMethod};  // Pour le choix du schéma`;
-
-        usedDirections = [3, 4, 5, 6].filter((x) => x != direction);
-        let Vx = 0;
-        let Vy = 0;
-        switch (direction) {
-          case 3: // Sud
-            Vy = -speed;
-            break;
-          case 4: // Est
-            Vx = speed;
-            break;
-          case 5: // Nord
-            Vy = speed;
-            break;
-          case 6: // Ouest
-            Vx = -speed;
-            break;
-        }
-        rep += `
-              //choice of the direction
-              int wall1 = ${usedDirections[0]};
-              int wall2 = ${usedDirections[1]};
-              int wall3 = ${usedDirections[2]};
-              real Vx = ${Vx};
-              real Vy = ${Vy};
-      `;
 
         rep += `
                     real[int, int] Curves${curveIndex}(3, ${nbPoints + 1});
@@ -406,6 +379,35 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
           }
         });
 
+        rep += `
+        
+        int choix = ${choiceMethod};  // Pour le choix du schéma`;
+
+        usedDirections = [3, 4, 5, 6].filter((x) => x != direction);
+        let Vx = 0;
+        let Vy = 0;
+        switch (direction) {
+          case 3: // Sud
+            Vy = -speed;
+            break;
+          case 4: // Est
+            Vx = speed;
+            break;
+          case 5: // Nord
+            Vy = speed;
+            break;
+          case 6: // Ouest
+            Vx = -speed;
+            break;
+        }
+        rep += `
+              //choice of the direction
+              int wall1 = ${usedDirections[0]};
+              int wall2 = ${usedDirections[1]};
+              int wall3 = ${usedDirections[2]};
+              real Vx = ${Vx};
+              real Vy = ${Vy};
+      `;
         rep += `
               // Maillage pour les calculs
               Th = buildmesh(${usedLabels
