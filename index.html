@@ -55,8 +55,6 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
       real dt = 0.1;
       real T = 1.;  // Temps final
       int i;
-      
-
       // Fespace
       fespace Uh(Th,P2);  // Espace pour la vélocité
       Uh u1, u2, v1, v2;
@@ -86,8 +84,8 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
                   u1old*(dx(u1)*v1 + dy(u1)*v2)
                   + u2old*(dx(u2)*v1 + dy(u2)*v2)
               )
-            + on(1, 2, u1=0, u2=0)  // Conditions de Dirichlet sur les avions
-            + on(4,5,6, u1=0, u2=-10)  // Conditions de Dirichlet à l'Est, au Nord et à l'Ouest
+            + on(1, 2, 7, 8, 9, 10, u1=0, u2=0)  // Conditions de Dirichlet sur les avions
+            + on(wall1, wall2, wall3, u1=Vx, u2=Vy)  // Conditions de Dirichlet à l'Est, au Nord et à l'Ouest
           ;
 
       // Méthode des caractéristiques
@@ -107,7 +105,7 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
                   -   convect([u1old, u2old], -dt, u2old)*v2/dt
               )
             + on(1, 2, 7, 8, 9, 10, u1=0, u2=0)  // Conditions de Dirichlet sur les avions
-            + on(4,5,6, u1=0, u2=-10)  // Conditions de Dirichlet à l'Est, au Nord et à l'Ouest
+            + on(wall1, wall2, wall3, u1=Vx, u2=Vy)  // Conditions de Dirichlet à l'Est, au Nord et à l'Ouest
           ;
 
 
@@ -168,7 +166,21 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
     <button onclick="updateMethodChoice(2)" id="characteristic">
       characteristic solver
     </button>
-
+    <div>
+      <p>liquid speed</p>
+      <button onclick="updateDirection(3)" id="direction_3">Sud</button>
+      <button onclick="updateDirection(4)" id="direction_4">Est</button>
+      <button onclick="updateDirection(5)" id="direction_5">Nord</button>
+      <button onclick="updateDirection(6)" id="direction_6">Ouest</button>
+    </div>
+    <input
+      type="range"
+      min="1"
+      max="20"
+      value="10"
+      class="slider"
+      oninput="updateSpeed(this.value)"
+    />
     <!-- results -->
     <div style="display: flex">
       <canvas
@@ -197,7 +209,7 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
       <div class="modal-content">
         <p>This page needs to load a solver for differential equations.</p>
         <p>
-          60MB will be loaded, we recomand you to use WIFI instead of 3G, 4G or
+          60MB will be loaded, we recommend you to use WIFI instead of 3G, 4G or
           even 5G.
         </p>
         <button onclick="loadLibraries()">
@@ -229,6 +241,20 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
         }
       }
 
+      function updateSpeed(val) {
+        speed = val;
+      }
+      function updateDirection(val) {
+        direction = val;
+        [3, 4, 5, 6].forEach((x) => {
+          if (direction === x) {
+            document.getElementById(`direction_${x}`).className = "selected";
+          } else {
+            document.getElementById(`direction_${x}`).className = "unselected";
+          }
+        });
+      }
+
       function loadLibraries() {
         const script1 = document.createElement("script");
         const script2 = document.createElement("script");
@@ -247,9 +273,13 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
 
       var penSize;
       var choiceMethod;
+      var direction;
+      var speed;
 
       updatPenSize(10);
       updateMethodChoice(1);
+      updateSpeed(10);
+      updateDirection(3);
 
       var c = document.getElementById("inputCanvas");
       var ctx = c.getContext("2d");
@@ -270,62 +300,89 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
 
         let rep = "";
         rep += `int choix = ${choiceMethod};  // Pour le choix du schéma`;
+
+        usedDirections = [3, 4, 5, 6].filter((x) => x != direction);
+        let Vx = 0;
+        let Vy = 0;
+        switch (direction) {
+          case 3: // Sud
+            Vy = -speed;
+            break;
+          case 4: // Est
+            Vx = speed;
+            break;
+          case 5: // Nord
+            Vy = speed;
+            break;
+          case 6: // Ouest
+            Vx = -speed;
+            break;
+        }
         rep += `
-              real[int, int] Curves${curveIndex}(3, ${nbPoints + 1});
+              //choice of the direction
+              int wall1 = ${usedDirections[0]};
+              int wall2 = ${usedDirections[1]};
+              int wall3 = ${usedDirections[2]};
+              real Vx = ${Vx};
+              real Vy = ${Vy};
+      `;
+
+        rep += `
+                    real[int, int] Curves${curveIndex}(3, ${nbPoints + 1});
 
 
-              ${points
-                .map(({ x, y }, index) => {
-                  if (index === 0) {
-                    return `Curves${curveIndex}(0, 0) = ${(x + 0) / 10};
-              Curves${curveIndex}(1, 0) = ${(300 - y) / 10};
-              Curves${curveIndex}(2, 0) = 0.;
+                    ${points
+                      .map(({ x, y }, index) => {
+                        if (index === 0) {
+                          return `Curves${curveIndex}(0, 0) = ${(x + 0) / 10};
+                    Curves${curveIndex}(1, 0) = ${(300 - y) / 10};
+                    Curves${curveIndex}(2, 0) = 0.;
 
-                  `;
-                  } else {
-                    const dx = x - points[index - 1].x;
-                    const dy = y - points[index - 1].y;
-                    const d = Math.sqrt(dx ** 2 + dy ** 2);
-                    totalDist += d;
-                    return `
-              Curves${curveIndex}(0, ${index}) = ${(x + 0) / 10};
-              Curves${curveIndex}(1, ${index}) = ${(300 - y) / 10};
-              Curves${curveIndex}(2, ${index}) = ${totalDist / 10};
+                        `;
+                        } else {
+                          const dx = x - points[index - 1].x;
+                          const dy = y - points[index - 1].y;
+                          const d = Math.sqrt(dx ** 2 + dy ** 2);
+                          totalDist += d;
+                          return `
+                    Curves${curveIndex}(0, ${index}) = ${(x + 0) / 10};
+                    Curves${curveIndex}(1, ${index}) = ${(300 - y) / 10};
+                    Curves${curveIndex}(2, ${index}) = ${totalDist / 10};
 
-                  `;
-                  }
-                })
-                .join("")}
+                        `;
+                        }
+                      })
+                      .join("")}
 
-              Curves${curveIndex}(0, ${points.length}) = ${
+                    Curves${curveIndex}(0, ${points.length}) = ${
           (points[0].x + 0) / 10
         };
-              Curves${curveIndex}(1, ${points.length}) = ${
+                    Curves${curveIndex}(1, ${points.length}) = ${
           (300 - points[0].y) / 10
         };
-              Curves${curveIndex}(2, ${points.length}) = ${
+                    Curves${curveIndex}(2, ${points.length}) = ${
           (totalDist + lastDist) / 10
         };`;
 
         rep += `
-        border jet${curveIndex}(t=0, 1)
-       {
-          int c=0;
-          int i = 0;
-          if( t== 1){
-              x = Curves${curveIndex}(0, ${nbPoints});
-              y = Curves${curveIndex}(1, ${nbPoints});
-          }
-          else{
-          while(Curves${curveIndex}(2, i) <= Curves${curveIndex}(2, ${nbPoints}) * t ){
-              i += 1;
-          }
-              x=(Curves${curveIndex}(2, i) - Curves${curveIndex}(2, ${nbPoints})*t)/(Curves${curveIndex}(2, i) - Curves${curveIndex}(2, i-1)) * Curves${curveIndex}(0, i-1) + (Curves${curveIndex}(2, ${nbPoints})*t - Curves${curveIndex}(2, i-1))/(Curves${curveIndex}(2, i) - Curves${curveIndex}(2, i-1)) * Curves${curveIndex}(0, i);
-              y=(Curves${curveIndex}(2, i) - Curves${curveIndex}(2, ${nbPoints})*t)/(Curves${curveIndex}(2, i) - Curves${curveIndex}(2, i-1)) * Curves${curveIndex}(1, i-1) + (Curves${curveIndex}(2, ${nbPoints})*t - Curves${curveIndex}(2, i-1))/(Curves${curveIndex}(2, i) - Curves${curveIndex}(2, i-1)) * Curves${curveIndex}(1, i);
+              border jet${curveIndex}(t=0, 1)
+             {
+                int c=0;
+                int i = 0;
+                if( t== 1){
+                    x = Curves${curveIndex}(0, ${nbPoints});
+                    y = Curves${curveIndex}(1, ${nbPoints});
+                }
+                else{
+                while(Curves${curveIndex}(2, i) <= Curves${curveIndex}(2, ${nbPoints}) * t ){
+                    i += 1;
+                }
+                    x=(Curves${curveIndex}(2, i) - Curves${curveIndex}(2, ${nbPoints})*t)/(Curves${curveIndex}(2, i) - Curves${curveIndex}(2, i-1)) * Curves${curveIndex}(0, i-1) + (Curves${curveIndex}(2, ${nbPoints})*t - Curves${curveIndex}(2, i-1))/(Curves${curveIndex}(2, i) - Curves${curveIndex}(2, i-1)) * Curves${curveIndex}(0, i);
+                    y=(Curves${curveIndex}(2, i) - Curves${curveIndex}(2, ${nbPoints})*t)/(Curves${curveIndex}(2, i) - Curves${curveIndex}(2, i-1)) * Curves${curveIndex}(1, i-1) + (Curves${curveIndex}(2, ${nbPoints})*t - Curves${curveIndex}(2, i-1))/(Curves${curveIndex}(2, i) - Curves${curveIndex}(2, i-1)) * Curves${curveIndex}(1, i);
 
-          }
-          label=${curveIndex};
-      }`;
+                }
+                label=${curveIndex};
+            }`;
         return rep;
       }
 
@@ -350,11 +407,13 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
         });
 
         rep += `
-        // Maillage pour les calculs
-        Th = buildmesh(${usedLabels
-          .map((l) => `jet${l}(-nbtj)`)
-          .join("+")}+C01(nbtbord)+C02(nbtbord)+C03(nbtbord)+C04(nbtbord));
-        `;
+              // Maillage pour les calculs
+              Th = buildmesh(${usedLabels
+                .map((l) => `jet${l}(-nbtj)`)
+                .join(
+                  "+"
+                )}+C01(nbtbord)+C02(nbtbord)+C03(nbtbord)+C04(nbtbord));
+              `;
         return rep;
       }
 
