@@ -3,13 +3,10 @@
   <head>
     <script src="lib/jquery-1.11.2.min.js"></script>
     <script src="lib/marchingsquares.js"></script>
-
-    <script src="lib/freefem.min.js" type="text/javascript"></script>
-    <script src="lib/ffapi.js" type="text/javascript"></script>
-    <!-- <script src="lib/opencv.js" type="text/javascript"></script> -->
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <textarea class="ffjs">
+    <textarea class="ffjs hiddenCode">
         load "ppm2rnm"
 
 
@@ -43,8 +40,8 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
 
 
     </textarea>
-    <textarea id="buildShape" class="ffjs"> </textarea>
-    <textarea class="ffjs">
+    <textarea id="buildShape" class="ffjs hiddenCode"> </textarea>
+    <textarea class="ffjs hiddenCode">
 plot(Th, ps="figure.eps");
 
 
@@ -180,7 +177,34 @@ plot([u1,u2],p, cmm="t = "+T, value=1);
     <div id="ffjs_stdout" style="font-family: monospace"></div>
     <div id="ffjs_stderr" style="font-family: monospace"></div>
 
+    <div id="askPermission">
+      <div class="modal-content">
+        <p>This page needs to load a solver for differential equations.</p>
+        <p>
+          60MB will be loaded, we recomand you to use WIFI instead of 3G, 4G or
+          even 5G.
+        </p>
+        <button onclick="loadLibraries()">load this bog file &lt;3</button>
+      </div>
+    </div>
+
     <script>
+      function loadLibraries() {
+        const script1 = document.createElement("script");
+        const script2 = document.createElement("script");
+        document.head.appendChild(script1);
+        document.head.appendChild(script2);
+        script1.type = "text/javascript";
+        script2.type = "text/javascript";
+        script1.src = "lib/freefem.min.js";
+        script2.src = "lib/ffapi.js";
+
+        script1.onload = function (e) {
+          // finish loading the script
+          document.getElementById("askPermission").remove();
+        };
+      }
+
       var c = document.getElementById("inputCanvas");
       var ctx = c.getContext("2d");
       var points = [];
@@ -202,7 +226,7 @@ plot([u1,u2],p, cmm="t = "+T, value=1);
 
         rep += `
               real[int, int] Curves${curveIndex}(3, ${nbPoints + 1});
-              
+
 
               ${points
                 .map(({ x, y }, index) => {
