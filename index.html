@@ -338,16 +338,6 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
           noFrame: true,
         });
 
-        rep[1].forEach((subRep, index) => {
-          ctx.beginPath();
-          ctx.moveTo(5 + rep[1][0][0], 5 + rep[1][0][1]);
-          subRep.forEach(([x, y]) => {
-            ctx.lineTo(5 + x, 5 + y);
-          });
-          ctx.strokeStyle = "red";
-          ctx.stroke();
-        });
-
         return rep[1].map((l) => l.map(([x, y]) => ({ x, y })));
       }
 
