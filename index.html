@@ -125,8 +125,6 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
               u1old = u1;
               u2old = u2;
               NavierStokes1;           
-        NavierStokes1;           
-              NavierStokes1;           
           }
               
           else if (choix == 2)
@@ -151,7 +149,21 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
       width="300px"
       height="300px"
     ></canvas>
-
+    <canvas
+      id="penSize"
+      style="border: 2px solid black"
+      width="50px"
+      height="50px"
+    ></canvas>
+    <input
+      type="range"
+      min="1"
+      max="20"
+      value="10"
+      class="slider"
+      oninput="updatPenSize(this.value)"
+    />
+    <!-- results -->
     <div style="display: flex">
       <canvas
         class="ffjs_graph"
@@ -187,6 +199,14 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
     </div>
 
     <script>
+      function updatPenSize(val) {
+        penSize = val;
+        var penShape = document.getElementById("penSize").getContext("2d");
+        penShape.clearRect(0, 0, 50, 50);
+        penShape.beginPath();
+        penShape.arc(25, 25, penSize, 0, Math.PI * 2, true);
+        penShape.fill();
+      }
       function loadLibraries() {
         const script1 = document.createElement("script");
         const script2 = document.createElement("script");
@@ -203,6 +223,8 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
         };
       }
 
+      var penSize;
+      updatPenSize(10);
       var c = document.getElementById("inputCanvas");
       var ctx = c.getContext("2d");
       var points = [];
@@ -313,7 +335,7 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
       c.onmousemove = function (ev) {
         if (ev.buttons === 1) {
           ctx.beginPath();
-          ctx.arc(ev.layerX, ev.layerY, 10, 0, Math.PI * 2, true);
+          ctx.arc(ev.layerX, ev.layerY, penSize, 0, Math.PI * 2, true);
           ctx.fill();
         }
       };
