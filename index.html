@@ -194,7 +194,10 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
           60MB will be loaded, we recomand you to use WIFI instead of 3G, 4G or
           even 5G.
         </p>
-        <button onclick="loadLibraries()">load this bog file &lt;3</button>
+        <button onclick="loadLibraries()">
+          load this big file<br />
+          &lt;3
+        </button>
       </div>
     </div>
 
@@ -251,8 +254,8 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
               ${points
                 .map(({ x, y }, index) => {
                   if (index === 0) {
-                    return `Curves${curveIndex}(0, 0) = ${(x + 5) / 10};
-              Curves${curveIndex}(1, 0) = ${(305 - y) / 10};
+                    return `Curves${curveIndex}(0, 0) = ${(x + 0) / 10};
+              Curves${curveIndex}(1, 0) = ${(300 - y) / 10};
               Curves${curveIndex}(2, 0) = 0.;
 
                   `;
@@ -262,8 +265,8 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
                     const d = Math.sqrt(dx ** 2 + dy ** 2);
                     totalDist += d;
                     return `
-              Curves${curveIndex}(0, ${index}) = ${(x + 5) / 10};
-              Curves${curveIndex}(1, ${index}) = ${(305 - y) / 10};
+              Curves${curveIndex}(0, ${index}) = ${(x + 0) / 10};
+              Curves${curveIndex}(1, ${index}) = ${(300 - y) / 10};
               Curves${curveIndex}(2, ${index}) = ${totalDist / 10};
 
                   `;
@@ -272,10 +275,10 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
                 .join("")}
 
               Curves${curveIndex}(0, ${points.length}) = ${
-          (points[0].x + 5) / 10
+          (points[0].x + 0) / 10
         };
               Curves${curveIndex}(1, ${points.length}) = ${
-          (305 - points[0].y) / 10
+          (300 - points[0].y) / 10
         };
               Curves${curveIndex}(2, ${points.length}) = ${
           (totalDist + lastDist) / 10
@@ -332,11 +335,16 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
         return rep;
       }
 
+      const BODER_WIDTH = 10;
       c.onmousemove = function (ev) {
         if (ev.buttons === 1) {
           ctx.beginPath();
           ctx.arc(ev.layerX, ev.layerY, penSize, 0, Math.PI * 2, true);
           ctx.fill();
+          ctx.clearRect(0, 0, BODER_WIDTH, 300);
+          ctx.clearRect(0, 0, 300, BODER_WIDTH);
+          ctx.clearRect(300 - BODER_WIDTH, 0, BODER_WIDTH, 300);
+          ctx.clearRect(0, 300 - BODER_WIDTH, 300, BODER_WIDTH);
         }
       };
 
@@ -346,7 +354,7 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
       }
 
       function getIsoline() {
-        const data = ctx.getImageData(5, 5, 300, 300).data;
+        const data = ctx.getImageData(0, 0, 300, 300).data;
 
         const newArr = [];
         for (let i = 0; i < data.length; i += 4 * 300) {
