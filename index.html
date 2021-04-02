@@ -55,7 +55,7 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
       real dt = 0.1;
       real T = 1.;  // Temps final
       int i;
-      int choix = 2;  // Pour le choix du schéma
+      
 
       // Fespace
       fespace Uh(Th,P2);  // Espace pour la vélocité
@@ -163,6 +163,12 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
       class="slider"
       oninput="updatPenSize(this.value)"
     />
+
+    <button onclick="updateMethodChoice(1)" id="linear">linear solver</button>
+    <button onclick="updateMethodChoice(2)" id="characteristic">
+      characteristic solver
+    </button>
+
     <!-- results -->
     <div style="display: flex">
       <canvas
@@ -210,6 +216,19 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
         penShape.arc(25, 25, penSize, 0, Math.PI * 2, true);
         penShape.fill();
       }
+
+      function updateMethodChoice(val) {
+        choiceMethod = val;
+        if (choiceMethod == 1) {
+          document.getElementById("linear").className = "selected";
+          document.getElementById("characteristic").className = "unselected";
+        }
+        if (choiceMethod == 2) {
+          document.getElementById("linear").className = "unselected";
+          document.getElementById("characteristic").className = "selected";
+        }
+      }
+
       function loadLibraries() {
         const script1 = document.createElement("script");
         const script2 = document.createElement("script");
@@ -227,7 +246,11 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
       }
 
       var penSize;
+      var choiceMethod;
+
       updatPenSize(10);
+      updateMethodChoice(1);
+
       var c = document.getElementById("inputCanvas");
       var ctx = c.getContext("2d");
       var points = [];
@@ -246,7 +269,7 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
         );
 
         let rep = "";
-
+        rep += `int choix = ${choiceMethod};  // Pour le choix du schéma`;
         rep += `
               real[int, int] Curves${curveIndex}(3, ${nbPoints + 1});
 
