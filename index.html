@@ -55,7 +55,7 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
       // real nu = 1.56e-5;
       real nu = 1.;
       real dt = 0.1;
-      real T = 1.;  // Temps final
+      real T = 2;  // Temps final
       int i;
       // Fespace
       fespace Uh(Th,P2);  // Espace pour la vélocité
@@ -117,7 +117,18 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
       p=0;
 
       i = 0;
-      for (real t = 0; t <= T; t += dt)
+      string[int] colour(21);
+      colour[0] = "figure1.eps";
+      colour[4] = "figure2.eps";
+      colour[8] = "figure3.eps";
+      colour[12] = "figure4.eps";
+      colour[16] = "figure5.eps";
+      colour[20] = "figure6.eps";
+      int compteur = 0;
+
+      //for (real t = 0; t <= T; t += dt)
+      real t = 0;
+      for (int compteur = 0; compteur < 24; compteur += 1)
       {
           if (i%10 == 0) i=0;  // On recalcule la matrice tous les 10 pas de temps
           if (choix == 1)
@@ -133,72 +144,132 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
               u2old = u2;
               NavierStokes2;
           }
+          if (compteur % 4 == 0)
+          {
+            plot([u1,u2],p, cmm="t = "+t, value=1, ps=colour[compteur]);
+          }
           i++;
+          t += dt;
+          //compteur++;
       }
-      plot([u1,u2],p, cmm="t = "+T, value=1);
+      plot([u1,u2],p, cmm="t = "+t, value=1);
     </textarea>
 
-    <div>
-      <button type="button" onclick="getMaillage();">maillage</button>
-      <button type="button" onclick="getSimulation();">simulation</button>
-      <input
-        type="range"
-        min="20"
-        max="150"
-        value="100"
-        class="slider"
-        oninput="updateShapePoints(this.value)"
-      />
-      <label id="discretize">nb of points used</label>
-    </div>
+    <div class="parameters">
+      <div class="container row borders">
+        <p>Liquid Speed</p>
+        <div class="windControl">
+          <div></div>
+          <button onclick="updateDirection(5)" id="direction_5">N</button>
+          <div></div>
+          <button onclick="updateDirection(6)" id="direction_6">W</button>
+          <div></div>
+          <button onclick="updateDirection(4)" id="direction_4">E</button>
+          <div></div>
+          <button onclick="updateDirection(3)" id="direction_3">S</button>
+          <div></div>
+        </div>
+        <div>
+          <label id="speedLabel"></label>
+          <input
+            type="range"
+            min="1"
+            max="20"
+            value="15"
+            class="slider"
+            oninput="updateSpeed(this.value)"
+          />
+        </div>
+      </div>
 
+      <div class="container column noBorder">
+        <p>Solver</p>
+
+        <button onclick="updateMethodChoice(1)" id="linear">
+          linear solver
+        </button>
+        <button onclick="updateMethodChoice(2)" id="characteristic">
+          characteristic solver
+        </button>
+      </div>
+      <div class="container noBorder">
+        <p>Precision</p>
+        <div>
+          <label id="discretize">nb of points used</label>
+          <input
+            type="range"
+            min="20"
+            max="150"
+            value="30"
+            class="slider"
+            oninput="updateShapePoints(this.value)"
+          />
+        </div>
+      </div>
+    </div>
+    <div style="display: flex">
+      <canvas
+        id="inputCanvas"
+        style="border: 2px solid red"
+        width="300px"
+        height="300px"
+      ></canvas>
+      <div class="penOptions">
+        <canvas
+          id="penSize"
+          style="border: 2px solid black"
+          width="50px"
+          height="50px"
+        ></canvas>
+        <input
+          type="range"
+          min="1"
+          max="20"
+          value="10"
+          class="slider"
+          oninput="updatPenSize(this.value)"
+        />
+      </div>
+      <div class="images">
+        <div id="welcome" class="visible">
+          <h3>Welcome</h3>
+          <p>Please draw something and launch a simulation.</p>
+          <img src="./img/welcome.jpg" />
+        </div>
+        <div id="error">
+          <h3>An error occurred</h3>
+          <p>I'm not a super computer, please try to use less points.</p>
+          <img src="./img/error.jpg" />
+        </div>
+        <div id="error2">
+          <h3>An error occurred</h3>
+          <p>You forget to draw something :p</p>
+          <img src="./img/error.jpg" />
+        </div>
+        <div id="finished">
+          <h3>Finished</h3>
+          <p>Wha !!!!!! That's amazing &lt;3</p>
+          <img src="./img/finished.jpg" />
+        </div>
+        <div id="waiting">
+          <h3>I'm working...</h3>
+          <p>please, wait few seconds</p>
+          <img src="./img/waiting.jpg" />
+        </div>
+      </div>
+    </div>
     <div>
-      <button onclick="updateMethodChoice(1)" id="linear">linear solver</button>
-      <button onclick="updateMethodChoice(2)" id="characteristic">
-        characteristic solver
+      <button type="button" onclick="getMaillage();" class="maillage">
+        maillage
+      </button>
+      <button type="button" onclick="getSimulation();" class="simulation">
+        simulation
+      </button>
+      <button type="button" onclick="clearDrawing();" class="clear">
+        Clear
       </button>
     </div>
 
-    <canvas
-      id="inputCanvas"
-      style="border: 2px solid red"
-      width="300px"
-      height="300px"
-    ></canvas>
-    <input
-      type="range"
-      min="1"
-      max="20"
-      value="10"
-      class="slider"
-      oninput="updatPenSize(this.value)"
-    />
-    <canvas
-      id="penSize"
-      style="border: 2px solid black"
-      width="50px"
-      height="50px"
-    ></canvas>
-    <div>
-      <button type="button" onclick="clearDrawing();">Clear</button>
-    </div>
-
-    <div>
-      <p>liquid speed</p>
-      <button onclick="updateDirection(3)" id="direction_3">Sud</button>
-      <button onclick="updateDirection(4)" id="direction_4">Est</button>
-      <button onclick="updateDirection(5)" id="direction_5">Nord</button>
-      <button onclick="updateDirection(6)" id="direction_6">Ouest</button>
-    </div>
-    <input
-      type="range"
-      min="1"
-      max="20"
-      value="10"
-      class="slider"
-      oninput="updateSpeed(this.value)"
-    />
-    <label id="speedLabel"></label>
     <!-- results -->
     <div style="display: flex">
       <canvas
@@ -210,16 +281,108 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
       >
         (message for older browsers where canvas is not implemented)
       </canvas>
-      <canvas
-        class="ffjs_graph"
-        data-ffjs="default"
-        width="500px"
-        height="500px"
-        style="width: 100%"
-      >
-        (message for older browsers where canvas is not implemented)
-      </canvas>
+      <div class="animation" style="width: 100%">
+        <canvas
+          id="canvas_1"
+          class="ffjs_graph"
+          data-ffjs="figure1.eps"
+          width="500px"
+          height="500px"
+          style="width: 100%"
+        >
+          (message for older browsers where canvas is not implemented)
+        </canvas>
+        <canvas
+          id="canvas_2"
+          class="ffjs_graph"
+          data-ffjs="figure2.eps"
+          width="500px"
+          height="500px"
+          style="width: 100%"
+        >
+          (message for older browsers where canvas is not implemented)
+        </canvas>
+        <canvas
+          id="canvas_3"
+          class="ffjs_graph"
+          data-ffjs="figure3.eps"
+          width="500px"
+          height="500px"
+          style="width: 100%"
+        >
+          (message for older browsers where canvas is not implemented)
+        </canvas>
+        <canvas
+          id="canvas_4"
+          class="ffjs_graph"
+          data-ffjs="figure4.eps"
+          width="500px"
+          height="500px"
+          style="width: 100%"
+        >
+          (message for older browsers where canvas is not implemented)
+        </canvas>
+        <canvas
+          id="canvas_5"
+          class="ffjs_graph"
+          data-ffjs="figure5.eps"
+          width="500px"
+          height="500px"
+          style="width: 100%"
+        >
+          (message for older browsers where canvas is not implemented)
+        </canvas>
+        <canvas
+          id="canvas_6"
+          class="ffjs_graph"
+          data-ffjs="figure6.eps"
+          width="500px"
+          height="500px"
+          style="width: 100%"
+        >
+          (message for older browsers where canvas is not implemented)
+        </canvas>
+
+        <canvas
+          id="canvas_7"
+          class="ffjs_graph"
+          data-ffjs="default"
+          width="500px"
+          height="500px"
+          style="width: 100%"
+        >
+          (message for older browsers where canvas is not implemented)
+        </canvas>
+
+        <input
+          type="range"
+          min="1"
+          max="7"
+          value="1"
+          class="slider"
+          oninput="updatAnimation(this.value)"
+          style="width: 70%"
+        />
+      </div>
     </div>
+    <p>
+      Simulations computed with
+      <a href="https://www.ljll.math.upmc.fr/lehyaric/ffjs/" target="_blank"
+        >FreeFem++-JS</a
+      >
+      from
+      <a href="https://www.ljll.math.upmc.fr/lehyaric/" target="_blank"
+        >Antoine Le Hyaric</a
+      >
+    </p>
+    <p>
+      Cat illustrations are from
+      <a
+        href="https://www.davidrevoy.com/article620/international-cat-day"
+        target="_blank"
+        >David Revoy</a
+      >
+    </p>
     <div id="ffjs_stdout" style="font-family: monospace"></div>
     <div id="ffjs_stderr" style="font-family: monospace"></div>
 
@@ -238,6 +401,14 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
     </div>
 
     <script>
+      function updatAnimation(val) {
+        document
+          .getElementById(`canvas_${animationStep || 1}`)
+          .classList.remove("visible");
+        document.getElementById(`canvas_${val}`).classList.add("visible");
+
+        animationStep = val;
+      }
       function updatPenSize(val) {
         penSize = val;
         var penShape = document.getElementById("penSize").getContext("2d");
@@ -279,7 +450,7 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
         shapesPoints = val;
         document.getElementById(
           "discretize"
-        ).textContent = `use ${val} points for discretization`;
+        ).textContent = `${val} points used`;
       }
 
       function loadLibraries() {
@@ -304,11 +475,14 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
       var direction;
       var speed;
 
-      updatPenSize(10);
-      updateMethodChoice(1);
+      var animationStep;
+
+      updatPenSize(15);
+      updateMethodChoice(2);
       updateSpeed(10);
       updateDirection(3);
-      updateShapePoints(100);
+      updateShapePoints(30);
+      updatAnimation(1);
 
       var c = document.getElementById("inputCanvas");
       var ctx = c.getContext("2d");
@@ -411,7 +585,7 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
         });
 
         rep += `
-        
+
         int choix = ${choiceMethod};  // Pour le choix du schéma`;
 
         usedDirections = [3, 4, 5, 6].filter((x) => x != direction);
@@ -494,7 +668,54 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
       function run() {
         const listOfPoints = getIsoline();
         codeFreeFem.innerHTML = getShapes(listOfPoints);
-        ffjs_evaluate();
+
+        if (listOfPoints.length === 0) {
+          document.getElementById("finished").classList.remove("visible");
+          document.getElementById("welcome").classList.remove("visible");
+          document.getElementById("error").classList.remove("visible");
+          document.getElementById("error2").classList.add("visible");
+          document.getElementById("waiting").classList.remove("visible");
+        } else {
+          document.getElementById("finished").classList.remove("visible");
+          document.getElementById("welcome").classList.remove("visible");
+          document.getElementById("error").classList.remove("visible");
+          document.getElementById("error2").classList.remove("visible");
+          document.getElementById("waiting").classList.add("visible");
+
+          setTimeout(run2, 2000);
+        }
+      }
+
+      function run2() {
+        try {
+          ffjs_evaluate();
+        } catch {
+          console.log("catched");
+          window.requestAnimationFrame(() => {
+            document.getElementById("finished").classList.remove("visible");
+            document.getElementById("welcome").classList.remove("visible");
+            document.getElementById("error").classList.remove("visible");
+            document.getElementById("error2").classList.add("visible");
+            document.getElementById("waiting").classList.remove("visible");
+          });
+        }
+
+        const children = document.getElementById("ffjs_stdout").childNodes;
+        if (children[children.length - 2].textContent.slice(0, 2) == "Ok") {
+          console.log("if1");
+          // le programme a bien fini
+          document.getElementById("finished").classList.add("visible");
+          document.getElementById("welcome").classList.remove("visible");
+          document.getElementById("error").classList.remove("visible");
+          document.getElementById("waiting").classList.remove("visible");
+        } else {
+          console.log("if2");
+          // an error occured
+          document.getElementById("finished").classList.remove("visible");
+          document.getElementById("welcome").classList.remove("visible");
+          document.getElementById("error").classList.add("visible");
+          document.getElementById("waiting").classList.remove("visible");
+        }
       }
       function getMaillage() {
         document.getElementById("runSimulation").classList.remove("ffjs");

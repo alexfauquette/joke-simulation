@@ -24,7 +24,7 @@
 }
 
 button {
-  background-color: #4caf50; /* Green */
+  background-color: green;
   border: none;
   color: white;
   padding: 15px 32px;
@@ -32,6 +32,7 @@ button {
   text-decoration: none;
   display: inline-block;
   font-size: 16px;
+  border-radius: 5px;
 }
 .selected {
   background-color: blue;
@@ -41,4 +42,110 @@ button {
   background-color: white;
   color: blue;
   border: 2px solid blue;
+}
+
+.maillage {
+  color: green;
+  background-color: white;
+  border: solid 2px green;
+  font-size: 1.2rem;
+}
+.simulation {
+  background-color: green;
+  color: white;
+  font-size: 1.2rem;
+}
+.clear {
+  color: red;
+  background-color: white;
+  border: solid 2px red;
+  font-size: 1.2rem;
+  margin-left: 2rem;
+}
+
+.container {
+  display: flex;
+  width: fit-content;
+  position: relative;
+  margin: 1rem;
+  padding: 1rem;
+}
+.container > p {
+  position: absolute;
+  top: -1rem;
+  display: flex;
+  margin: 0;
+  padding: 0 1rem;
+  background: white;
+  font-size: 1.5rem;
+}
+.windControl {
+  display: grid;
+  grid-template-columns: 3rem 3rem 3rem;
+  margin-right: 2rem;
+}
+.windControl button {
+  height: 40px;
+  margin: 5px;
+  padding: 0;
+  text-align: center;
+}
+
+label {
+  font-size: 1.2rem;
+  display: block;
+}
+
+.row {
+  flex-direction: row;
+}
+.column {
+  flex-direction: column;
+}
+.borders {
+  border: solid 2px gray;
+  border-radius: 2rem;
+}
+.borders > p {
+  left: 2rem;
+}
+.noBorder > p {
+  left: 0rem;
+}
+
+.parameters {
+  display: flex;
+  padding: 1rem;
+  margin: 1rem;
+}
+
+.penOptions {
+  display: inline-block;
+  vertical-align: top;
+}
+
+.penOptions input {
+  display: block;
+}
+
+.animation {
+  position: relative;
+  text-align: center;
+}
+.animation canvas {
+  position: absolute;
+  top: 1rem;
+  opacity: 0;
+}
+.visible {
+  opacity: 1 !important;
+}
+.images {
+  margin-left: 2rem;
+}
+.images div {
+  display: none;
+}
+.images .visible {
+  display: inline-block;
 }
