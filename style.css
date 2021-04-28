@@ -65,7 +65,6 @@ button {
 
 .container {
   display: flex;
-  width: fit-content;
   position: relative;
   margin: 1rem;
   padding: 1rem;
@@ -103,20 +102,19 @@ label {
   flex-direction: column;
 }
 .borders {
-  border: solid 2px gray;
-  border-radius: 2rem;
+  margin-top: 3rem !important;
+  padding-top: 3rem !important;
+  border-top: solid 3px gray;
 }
 .borders > p {
   left: 2rem;
 }
-.noBorder > p {
+.noBorder > p,
+.righBorder > p {
   left: 0rem;
 }
-
-.parameters {
-  display: flex;
-  padding: 1rem;
-  margin: 1rem;
+.righBorder {
+  border-right: solid 2px gray;
 }
 
 .penOptions {
@@ -136,8 +134,13 @@ label {
   position: absolute;
   top: 1rem;
   opacity: 0;
+  width: 100%;
 }
-.visible {
+#canvas_1 {
+  top: 0;
+  position: inherit;
+}
+.animation .visible {
   opacity: 1 !important;
 }
 .images {
@@ -148,4 +151,30 @@ label {
 }
 .images .visible {
   display: inline-block;
+}
+
+#interaction {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+footer {
+  border-top: solid 2px black;
+  border-bottom: solid 2px black;
+}
+.results > div {
+  flex: 1 1;
+}
+.results {
+  padding-top: 3rem !important;
+}
+.results > .container {
+  margin-top: 0 !important;
+  padding-left: 0;
+  padding-right: 0;
+}
+canvas {
+  /* margin-bottom: auto; */
+  box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12),
+    0 2px 4px -1px rgba(0, 0, 0, 0.2);
 }
