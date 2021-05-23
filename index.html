@@ -644,8 +644,16 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
       const BODER_WIDTH = 10;
       c.onmousemove = function (ev) {
         if (ev.buttons === 1) {
+          var rect = c.getBoundingClientRect();
           ctx.beginPath();
-          ctx.arc(ev.layerX, ev.layerY, penSize, 0, Math.PI * 2, true);
+          ctx.arc(
+            (300 * (ev.clientX - rect.left)) / rect.width,
+            (300 * (ev.clientY - rect.top)) / rect.height,
+            penSize,
+            0,
+            Math.PI * 2,
+            true
+          );
           ctx.fill();
           ctx.clearRect(0, 0, BODER_WIDTH, 300);
           ctx.clearRect(0, 0, 300, BODER_WIDTH);
