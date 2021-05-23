@@ -230,7 +230,7 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
             max="20"
             value="10"
             class="slider"
-            oninput="updatPenSize(this.value)"
+            oninput="updatePenSize(this.value)"
           />
         </div>
         <div class="images">
@@ -368,7 +368,7 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
             max="7"
             value="1"
             class="slider"
-            oninput="updatAnimation(this.value)"
+            oninput="updateAnimation(this.value)"
             style="width: 70%"
           />
         </div>
@@ -413,7 +413,7 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
     </div>
 
     <script>
-      function updatAnimation(val) {
+      function updateAnimation(val) {
         document
           .getElementById(`canvas_${animationStep || 1}`)
           .classList.remove("visible");
@@ -421,7 +421,7 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
 
         animationStep = val;
       }
-      function updatPenSize(val) {
+      function updatePenSize(val) {
         penSize = val;
         var penShape = document.getElementById("penSize").getContext("2d");
         penShape.clearRect(0, 0, 50, 50);
@@ -489,12 +489,12 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
 
       var animationStep;
 
-      updatPenSize(15);
+      updatePenSize(15);
       updateMethodChoice(2);
       updateSpeed(10);
       updateDirection(3);
       updateShapePoints(30);
-      updatAnimation(1);
+      updateAnimation(1);
 
       var c = document.getElementById("inputCanvas");
       var ctx = c.getContext("2d");
@@ -702,7 +702,6 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
         try {
           ffjs_evaluate();
         } catch {
-          console.log("catched");
           window.requestAnimationFrame(() => {
             document.getElementById("finished").classList.remove("visible");
             document.getElementById("welcome").classList.remove("visible");
@@ -714,15 +713,13 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
 
         const children = document.getElementById("ffjs_stdout").childNodes;
         if (children[children.length - 2].textContent.slice(0, 2) == "Ok") {
-          console.log("if1");
           // le programme a bien fini
           document.getElementById("finished").classList.add("visible");
           document.getElementById("welcome").classList.remove("visible");
           document.getElementById("error").classList.remove("visible");
           document.getElementById("waiting").classList.remove("visible");
         } else {
-          console.log("if2");
-          // an error occured
+          // an error occurred
           document.getElementById("finished").classList.remove("visible");
           document.getElementById("welcome").classList.remove("visible");
           document.getElementById("error").classList.add("visible");
