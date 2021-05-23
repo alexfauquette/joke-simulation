@@ -43,6 +43,25 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
     </textarea>
     <textarea id="buildShape" class="ffjs hiddenCode"> </textarea>
     <textarea class="ffjs hiddenCode">
+      cout << "START MESH EXPORT" << endl;
+
+      int NbVertices = Th.nv;
+      int NbTriangles = Th.nt;
+      int NbBoundaryElements = Th.nbe;
+      
+      cout << NbVertices << " " << NbTriangles << " " << NbBoundaryElements << endl;
+      for (int i = 0; i < NbVertices; i++){
+        cout << Th(i).x << " " << Th(i).y << " " << Th(i).label << endl;
+      }
+      for (int k = 0; k < NbTriangles; k++){
+        cout << int(Th[k][0])+1 << " " << int(Th[k][1])+1 << " " << int(Th[k][2])+1 << " " << Th[k].label << endl;
+      }
+      for (int k = 0; k < NbBoundaryElements; k++){
+        cout << Th.be(k)[0]+1 << " " << Th.be(k)[1]+1 << " " << Th.be(k).label << endl;
+      }
+
+      cout << "END MESH EXPORT" << endl;
+
       plot(Th, ps="figure.eps");
     </textarea>
     <textarea class="ffjs hiddenCode" id="runSimulation">
@@ -375,6 +394,8 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
         </div>
       </div>
     </div>
+
+    <a id="meshDownload" href="" download="">Download</a>
     <footer>
       <p>
         Simulations computed with
@@ -466,6 +487,14 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
         ).textContent = `${val} points used`;
       }
 
+      function updateMeshDownload() {
+        const button = document.getElementById("meshDownload");
+        if (meshURL) {
+          button.setAttribute("href", meshURL);
+          button.setAttribute("download", "mesh.msh");
+        }
+      }
+
       function loadLibraries() {
         const script1 = document.createElement("script");
         const script2 = document.createElement("script");
@@ -500,6 +529,10 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
       var c = document.getElementById("inputCanvas");
       var ctx = c.getContext("2d");
       var points = [];
+
+      var code_output = [];
+      var code_mesh = [];
+      var meshURL = "";
 
       var codeFreeFem = document.getElementById("buildShape");
 
@@ -708,6 +741,10 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
       }
 
       function run2() {
+        code_output = [];
+        code_mesh = [];
+        meshURL = "";
+        updateMeshDownload();
         try {
           ffjs_evaluate();
         } catch {
@@ -734,6 +771,43 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
           document.getElementById("error").classList.add("visible");
           document.getElementById("waiting").classList.remove("visible");
         }
+        let lineStatus = "INIT";
+        const regexLineOfCode = /^\s*\d\d* :/;
+        for (let i = 0; i < children.length; i++) {
+          if (children[i].textContent) {
+            if (regexLineOfCode.test(children[i].textContent)) {
+              lineStatus = "CODE";
+            } else if (
+              !regexLineOfCode.test(children[i].textContent) &&
+              lineStatus === "CODE"
+            ) {
+              lineStatus = "OUTPUT";
+              code_output.push(children[i].textContent);
+            } else if (children[i].textContent.includes("START MESH EXPORT")) {
+              lineStatus = "MESH";
+            } else if (children[i].textContent.includes("END MESH EXPORT")) {
+              lineStatus = "OUTPUT";
+            } else {
+              if (lineStatus === "MESH") {
+                code_mesh.push(children[i].textContent);
+              }
+              if (lineStatus === "OUTPUT") {
+                code_output.push(children[i].textContent);
+              }
+            }
+          }
+        }
+        if (code_mesh.length > 0) {
+          meshURL = URL.createObjectURL(
+            new Blob(
+              code_mesh.map((t) => `${t}\n`),
+              { type: "text/plain;charset=utf-8" }
+            )
+          );
+        } else {
+          meshURL = "";
+        }
+        updateMeshDownload();
       }
       function getMaillage() {
         document.getElementById("runSimulation").classList.remove("ffjs");
