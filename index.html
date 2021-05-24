@@ -4,6 +4,11 @@
     <meta charset="utf-8" />
     <script src="lib/jquery-1.11.2.min.js"></script>
     <script src="lib/marchingsquares.js"></script>
+    <script type="text/javascript" src="lib/LZWEncoder.js"></script>
+    <script type="text/javascript" src="lib/NeuQuant.js"></script>
+    <script type="text/javascript" src="lib/GIFEncoder.js"></script>
+    <script type="text/javascript" src="lib/b64.js"></script>
+
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
@@ -395,7 +400,11 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
       </div>
     </div>
 
-    <a id="meshDownload" href="" download="">Download</a>
+    <a id="meshDownload" href="" download="">Download Mesh</a>
+    <button id="showConsole">Show Console</button>
+    <button id="getGif">Download GIF</button>
+
+    <pre id="outputText"></pre>
     <footer>
       <p>
         Simulations computed with
@@ -417,8 +426,16 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
       </p>
     </footer>
 
-    <div id="ffjs_stdout" style="font-family: monospace"></div>
-    <div id="ffjs_stderr" style="font-family: monospace"></div>
+    <div
+      id="ffjs_stdout"
+      style="font-family: monospace"
+      class="hiddenCode"
+    ></div>
+    <div
+      id="ffjs_stderr"
+      style="font-family: monospace"
+      class="hiddenCode"
+    ></div>
 
     <div id="askPermission">
       <div class="modal-content">
@@ -817,6 +834,35 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
         document.getElementById("runSimulation").classList.add("ffjs");
         run();
       }
+
+      document.getElementById("getGif").onclick = () => {
+        var encoder = new GIFEncoder();
+
+        encoder.setRepeat(0); //0  -> loop forever
+        //1+ -> loop n times then stop
+        encoder.setDelay(300); //go to next frame every n milliseconds
+
+        encoder.start();
+        encoder.addFrame(document.getElementById("canvas_1").getContext("2d"));
+        encoder.addFrame(document.getElementById("canvas_2").getContext("2d"));
+        encoder.addFrame(document.getElementById("canvas_3").getContext("2d"));
+        encoder.addFrame(document.getElementById("canvas_4").getContext("2d"));
+        encoder.addFrame(document.getElementById("canvas_5").getContext("2d"));
+        encoder.addFrame(document.getElementById("canvas_6").getContext("2d"));
+        encoder.addFrame(document.getElementById("canvas_7").getContext("2d"));
+        encoder.finish();
+        encoder.download("download.gif");
+      };
+
+      var outVisible = false;
+      document.getElementById("showConsole").onclick = () => {
+        var rep = "";
+        if (!outVisible) {
+          rep = code_output.join("\n");
+        }
+        outVisible = !outVisible;
+        document.getElementById("outputText").innerHTML = rep;
+      };
     </script>
   </body>
 </html>
