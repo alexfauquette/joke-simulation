@@ -209,17 +209,16 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
         </div>
 
         <div class="container column righBorder">
-          <p>Solver</p>
-
+          <p>Numerical Solver</p>
           <button onclick="updateMethodChoice(1)" id="linear">
-            linear solver
+            linear method (unstable)
           </button>
           <button onclick="updateMethodChoice(2)" id="characteristic">
-            characteristic solver
+            characteristic method
           </button>
         </div>
         <div class="container noBorder">
-          <p>Precision</p>
+          <p>Border sampling</p>
           <div>
             <label id="discretize">nb of points used</label>
             <input
@@ -261,7 +260,10 @@ border C04(t=0, 1){x = 0;y = (1-t)*(ny-1);label=6;}  // Ouest
         <div class="images">
           <div id="welcome" class="visible">
             <h3>Welcome</h3>
-            <p>Please draw something and launch a simulation.</p>
+            <p>
+              Please draw something in the red square on the left, and launch a
+              simulation.
+            </p>
             <img src="./img/welcome.jpg" />
           </div>
           <div id="error">
