@@ -1,0 +1,145 @@
+/*
+#1B4DDB bleu fonce
+#6F73FF violet
+#47A2FF bleu claire
+#78CAE8 vert chelou fonce
+#8AFAFF vert chelou claire
+*/
+
+article {
+    padding: 0px 0px 30px 0px !important;
+    background-color: #FFF;
+    font-size: 1.4em;
+}
+
+article img {
+    max-width: 90%;
+    min-width: 50%;
+    max-height: 100%;
+    height: auto;
+    margin: auto;
+    display: block;
+}
+
+article>* {
+    padding: 10px 5% 10px 5%;
+}
+
+article ul li {
+    list-style-type: square;
+    margin-top: 15px;
+}
+
+article h1 {
+    width: 100%;
+    color: #000;
+    background-color: #CCC;
+    text-align: center;
+    font-family: "Arial";
+    font-size: 150%;
+    margin: 0px 0px 20px 0px;
+    padding: 30px 0px 30px 0px;
+}
+
+article h2 {
+    margin-top: 30px;
+    font-size: 140%;
+}
+
+article h3 {
+    margin-top: 15px;
+    font-size: 130%;
+}
+
+article h2, article h3 {
+    color: #777;
+}
+
+
+/*
+article :not(h1)~h2{
+	border-top: #777 dashed 3px;
+}
+*/
+
+article canvas {
+    border: 0px;
+    padding: 0px;
+    margin: 0px;
+}
+
+article .animation {
+    padding: 10px;
+    margin: 10px;
+    background-color: #ede5da;
+}
+
+article p {
+    text-indent: 30px;
+    text-align: justify;
+    padding: 0px 2% 0px 2%;
+}
+
+article form {
+    float: none;
+}
+
+article blockquote {
+    margin: 5px 5% 5px 5%;
+    text-align: center;
+    display: block;
+    font-style: italic;
+}
+
+
+/*
+article strong {
+    color: #555;
+    font-weight: bold;
+}
+*/
+
+.algo>ol {
+    text-align: left;
+    margin-left: 10%;
+}
+
+
+/*evite que le code hérite de l'ombre du bouton*/
+
+.btn-default kbd {
+    text-shadow: none;
+}
+
+
+/*évite aux images de dépasser*/
+
+.modal-content img {
+    max-width: 100%;
+}
+
+[data-toggle]:hover {
+    cursor: pointer;
+}
+
+.loader {
+    border: 16px solid #f3f3f3;
+    /* Light grey */
+    border-top: 16px solid #fff;
+    /* Blue */
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    animation: spin 2s linear infinite;
+    text-align: center;
+    margin: auto;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}

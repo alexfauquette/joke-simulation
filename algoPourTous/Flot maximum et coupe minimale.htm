@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+	  ga('create', 'UA-102891905-1', 'auto');
+	  ga('send', 'pageview');
+
+	</script>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta charset="utf-8">
+
+	<title>
+		Flot maximum et coupe minimale </title>
+
+	<link rel="stylesheet" type="text/css" href="CSS/general.css">
+	<link rel="stylesheet" type="text/css" href="CSS/article.css">
+	<link rel="stylesheet" type="text/css" href="CSS/liste_cours.css">
+
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+	<nav class="navbar navbar-default navbar-static-top">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="index.htm">Algo pour tous</a>
+			</div>
+			<div id="navbar" class="navbar-collapse collapse">
+				<ul class="nav navbar-nav">
+					<li>
+						<a href="Recherche.htm">Liste des cours</a>
+					</li>
+					<!--
+					<li>
+						<a href="#">Liste des parcours (en traveaux)</a>
+					</li>
+					<li>
+						<a href="#">Animations (en traveaux)</a>
+					</li>
+					-->
+					<li>
+						<a href="FAQ.htm">FAQ</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+
+	<div class="container-fluid">
+		<div class="row">
+			<article class="col-lg-10 col-lg-offset-1">
+
+				<h1>Flot maximal</h1>
+
+				<p>
+					Nous sommes en 2048, et pour une raison mystérieuse, la trajectoire de la Terre a été modifié. Est-ce un coup des illuminatis ou des reptiliens, personne ne le sait. Mais une solution existe. Il faudrait que tous les Français sautent au même moment au
+					même endroit. Le gouvernement a donc décidé des convoquer toute la population à Lille, et vous à charger de trouver comment faire venir tout le monde le plus vite possible. Face à la tâche qui vous est imposée, vous fait appel à un ami passionné
+					d’informatique, moi.
+				</p>
+
+				<h2>
+				Je me souviens …
+				</h2>
+
+				<p>
+					C’est marrant, votre problème m’en rappel un autre que m’avait posé une entreprise de gestion de l’eau. Ils avaient trouvé une source qu’ils voulaient exploitées. Mais ils ne savaient pas si leurs tuyaux allaient être assez large pour faire passer toute
+					l’eau. Quoi ? Tu ne vois pas le lien avec ton problème ? Attend, je vais te montrer.
+				</p>
+
+				<img alt="illustration de l'exemple et sa représentation par un graphe" src="images/flot-dessin.svg" />
+
+				<p>
+					Sur ce dessin, à gauche tu as la source qu’ils ont trouvée. Après tu as les stations de traitement de l’eau, après tu as les stations de distribution, et à la fin tu as les villes qui vont recevoir l’eau. A droite, je t'ai redessiné la même situation
+					en utilisant un graphe. Comme tous les tuyaux n’ont pas la même taille, j’ai écrits à côté les débits d’eau povant passer dans ces tuyaux.
+				</p>
+				<p>
+					Mais il manque encore un détail sur ce schéma. A droite, toutes les villes vont vers un même point noté P comme "puit". Cette fois ce ne sont pas de vrais tuyaux. C’est uniquement une façon de mettre sur le schéma la quantité d’eau qu’utilise chaque ville.
+					Puis grâce à un petit algorithme bien connu, j’ai pu calculer comment faire passer les plus d’eau du point tout à gauche (le point S) vers le point tout à droite (le point P).
+				</p>
+
+				<p>
+					Maintenant pour faire le lien avec ton problème. Tu n’as qu’à remplacer les tuyaux par des routes, le débit d’eau par un débit de personne, et les usines par des villes ou des sorties d’autoroute. Par contre, tu n’as pas une unique source, les gens viennent
+					de toutes les villes, hors pour cet algorithme, il faut un seul point de départ et un seul point d'arrivé. Mais tu peux utiliser l’astuce qui m’a permis de représenter la consommation d’eau des villes. Tu ajoutes un point source en dehors de ta carte,
+					et tu le relies à toutes tes villes avec leur nombre d’habitants. Maintenant, tu as le même problème que moi, faire passer les plus de personnes entre ton point source (celui que tu as ajouté), et le point d’arrivée, le sommet correspondat à Lille.
+				</p>
+
+				<img alt="illustration du graphe à utiliser pour résoudre le problème" src="images/flot-villes.svg" />
+
+				<h2>
+				Un algorithme très subtil
+			</h2>
+
+				<p>
+					Attention, cet algorithme est très compliqué et conceptuel. Tu vas chercher un chemin entre ton point de départ et ton point d’arrivé, et tu vas le remplir au maximum. Et tu recommences tant que tu trouves des chemins. Si tu ne sais pas comment trouver
+					un chemin, je te conseil les algorithmes de parcourt de graphe. Ça peut paraitre un peu barbare, mais c’est l’idée de base et ça fonctionne.
+				</p>
+
+				<p>
+					Enfin, il y a quand même une subtilité dans la façon de chercher notre chemin. Il faut laisser la possibilité de vider un tuyau pour faire passer son eau ailleurs. Je sais que ce n’est pas très claire, du coup voici un exemple.
+				</p>
+
+				<p>
+					A gauche vous avez notre réseau de départ, avec les débits à ne pas dépasser. On voit rapidement que l’on obtient un débit maximal si on remplit les tuyaux reliant A, B, D, F et ceux reliant A, C, E, F en laissant vide celui entre C et D. Si on applique
+				</p>
+
+				<img alt="graphe qui servira d'exemple et une solution de son flot maximal" src="images/flot1.svg" />
+
+				<p>
+					l’algorithme, il se peut qu’il fasse la chose suivante :
+				</p>
+				<ol>
+					<li>
+						Remplir le chemin A-C-D-F de 5, car on ne peut pas mettre plus entre C et D
+					</li>
+					<li>
+						Remplir le chemin A-C-E-F de 10, car c’est tout ce qu’il reste entre A et C
+					</li>
+					<li>
+						Remplir le chemin A-B-D-F de 5, car c’est ce qu’il reste entre D et F
+					</li>
+				</ol>
+
+				<img alt="étapes de l'algorithme précédent utilisé sur le graphe d'exemple" src="images/flot2.svg" />
+
+				<p>
+					Et là on n’a pas de chemin direct entre A et F. Si on regarde ce qui sort de A ou ce qui arrive en F, on trouve un total de 20, alors que la solution que l’on avait trouvé instinctivement donnait un débit de 25. Conclusion, si on s’arrête là on n’a pas
+					le débit maximal.
+				</p>
+
+				<p>
+					On ne peut rien ajoute rentre A et C. Par contre il reste de la place entre A et B. Il en reste aussi entre B et D. Et c’est là que l’on est coincé. Mais D est aussi relié à C, on va donc lui demander s’il ne peut pas mettre son débit de 5 ailleurs. D’habitude
+					on se disait je peux ajouter au plus x litres entre ces deux sommets. Là on va se dire, je peux enlever au plus x litres de C vers D. Maintenant, il reste à trouver où on peut faire passer ce débit depuis C, c’est-à-dire trouver un chemin entre C
+					et F, sachant que l’on peut encore enlever du débit à des tuyaux si nécessaire.
+				</p>
+
+				<img alt="étape de la recherche d'un chemin avec la possibilité d'aller en arrière" src="images/flot3.svg" />
+
+				<h2>Résumé de l’algorithme</h2>
+
+				<p>
+					Pour résumer, il nous faut au début un graphe orienté et pondéré (les pondérations sont les débits max des tuyaux). Il faut définir un sommet comme point de départ (on l’appel souvent la source) et un sommet comme point d’arrivée (que l’on appelle la
+					puit).
+				</p>
+
+				<p>
+					Pendant l’algorithme, les tuyaux peuvent avoir trois états possible.
+				</p>
+				<ul>
+					<li>
+						Ils sont vides, donc on peut seulement aller dans leur sens en les remplissant.
+					</li>
+					<li>
+						Ils sont pleins, donc on peut seulement aller en sens contraire en les vidant.
+					</li>
+					<li>
+						Ils sont remplis mais pas complétement, du coup on peut aller dans les deux sens, soit en les remplissant soit en les vidant.
+					</li>
+				</ul>
+				<p>
+					En utilisant ces trois possibilités, on va chercher un chemin entre la source et le puit. Et augmenter au maximum le débit de ce chemin. Pour cela, on regarde tous les tuyaux utilisés, et on retient le facteur limitant. Cela peut être soit un tuyau que
+					l’on remplit au maximum s’il était utilisé dans son sens. Soit un tuyau que l’on vide complétement s’il était utilisé dans le sens opposé.
+				</p>
+
+				<p>
+					Enfin, on recommence jusqu’à ce qu’il n’existe plus de chemin reliant la source au puit.
+				</p>
+
+				<h2>L’animation ! l’animation !</h2>
+
+				<p>
+					Si vous n’êtes pas sûr d’avoir suivi, voici un exemple pas à pas. A chaque étape, vous verrez :
+				</p>
+				<ol>
+					<li>
+						Le chemin choisit par l’algorithme de parcourt de graphe (en vert pour les arêtes en sens direct, et en rouge pour celles en sens inverse)
+					</li>
+					<li>
+						L’arête qui limite le remplissage ce chemin (en orange)
+					</li>
+					<li>
+						La mise à jour du réseau et du graphe qui sert à trouver un chemin
+					</li>
+				</ol>
+				<p>
+					Le graphe d’aide, et un graphe non pondéré qui représente le sens dans lequel on peut utiliser des tuyaux. Si le tuyau est vide, l’arête va dans le même sens, s’il est plein elle va dans le sens contraire. Et s’il est en parti rempli mais pas complètement,
+					l’arête n’a pas de sens.
+				</p>
+
+
+				<script type="text/javascript" src="JS/jquery-3.js"></script>
+
+
+				<div class="animation">
+					<style type="text/css">
+						#can_graphe1 {
+							width: 49%;
+						}
+
+						#can_graphe2 {
+							width: 49%;
+						}
+
+						#can_explication {
+							width: 100%;
+						}
+					</style>
+
+					<canvas id="can_graphe1" width="700px" height="500px" style="background-color:white;">[Votre navigateur ne supporte pas les canvas]</canvas>
+
+					<canvas id="can_graphe2" width="700px" height="500px" style="background-color:white;">[Votre navigateur ne supporte pas les canvas]</canvas>
+
+					<canvas id="can_explication" width="1400px" height="200px" style="background-color:white;">[Votre navigateur ne supporte pas les canvas]</canvas>
+
+				</div>
+
+				<!-- 	Telechargement des objets	 -->
+				<script src="JS/Objet_noeud.js"></script>
+				<script src="JS/Objet_arete_flot.js"></script>
+				<script src="JS/Objet_graphe_simplifie_flot.js"></script>
+				<script src="JS/Algorithme_flot_max.js"></script>
+
+				<script type="text/javascript">
+					var bordures_noeud = [
+						["black", 3],
+						["black", 3],
+						["black", 3]
+					];
+					var fonds_noeud = ["white", "#ac00e6", "#4700b3"];
+					var couleurs_texte_noeud = ["black", "white", "white"];
+					var couleurs_arete = ["black", "lightgray", "green", "red", "orange"];
+					var epaisseurs_arete = [4, 4, 6, 6, 6, ];
+
+
+					var graphe = new Graphe("can_graphe1", [5, 5, 690, 490], bordures_noeud, fonds_noeud, couleurs_texte_noeud, couleurs_arete, epaisseurs_arete);
+
+					graphe.oriente = true;
+
+					graphe.ajouterNoeud(50, 250, 40, "A");
+					graphe.ajouterNoeud(200, 100, 40, "B");
+					graphe.ajouterNoeud(200, 400, 40, "C");
+					graphe.ajouterNoeud(450, 100, 40, "D");
+					graphe.ajouterNoeud(450, 250, 40, "E");
+					graphe.ajouterNoeud(450, 400, 40, "F");
+					graphe.ajouterNoeud(650, 250, 40, "G");
+
+
+					graphe.ajouterArrete(graphe.noeuds[0], graphe.noeuds[1], 100);
+					graphe.ajouterArrete(graphe.noeuds[0], graphe.noeuds[2], 5);
+					graphe.ajouterArrete(graphe.noeuds[1], graphe.noeuds[3], 100);
+					graphe.ajouterArrete(graphe.noeuds[1], graphe.noeuds[4], 100);
+					graphe.ajouterArrete(graphe.noeuds[2], graphe.noeuds[4], 1);
+					graphe.ajouterArrete(graphe.noeuds[2], graphe.noeuds[5], 5);
+					graphe.ajouterArrete(graphe.noeuds[3], graphe.noeuds[6], 7);
+					graphe.ajouterArrete(graphe.noeuds[4], graphe.noeuds[6], 5);
+					graphe.ajouterArrete(graphe.noeuds[5], graphe.noeuds[6], 20);
+
+
+					graphe.tracer(false, 0, 0);
+
+
+					//-------------------------------------------------------------------------------------------------//
+					var couleurs_arete = ["black", "green", "orange"];
+					var epaisseurs_arete = [4, 6, 6, 6, ];
+
+					var graphe2 = new Graphe("can_graphe2", [5, 5, 690, 490], bordures_noeud, fonds_noeud, couleurs_texte_noeud, couleurs_arete, epaisseurs_arete);
+
+
+					graphe2.ajouterNoeud(50, 250, 40, "A");
+					graphe2.ajouterNoeud(200, 100, 40, "B");
+					graphe2.ajouterNoeud(200, 400, 40, "C");
+					graphe2.ajouterNoeud(450, 100, 40, "D");
+					graphe2.ajouterNoeud(450, 250, 40, "E");
+					graphe2.ajouterNoeud(450, 400, 40, "F");
+					graphe2.ajouterNoeud(650, 250, 40, "G");
+
+
+					graphe2.ajouterArrete(graphe.noeuds[0], graphe.noeuds[1], 100);
+					graphe2.ajouterArrete(graphe.noeuds[0], graphe.noeuds[2], 5);
+					graphe2.ajouterArrete(graphe.noeuds[1], graphe.noeuds[3], 100);
+					graphe2.ajouterArrete(graphe.noeuds[1], graphe.noeuds[4], 100);
+					graphe2.ajouterArrete(graphe.noeuds[2], graphe.noeuds[4], 1);
+					graphe2.ajouterArrete(graphe.noeuds[2], graphe.noeuds[5], 5);
+					graphe2.ajouterArrete(graphe.noeuds[3], graphe.noeuds[6], 7);
+					graphe2.ajouterArrete(graphe.noeuds[4], graphe.noeuds[6], 5);
+					graphe2.ajouterArrete(graphe.noeuds[5], graphe.noeuds[6], 20);
+
+					graphe2.pondere = false;
+					graphe2.tracer(false, 0, 0);
+
+					//----------------------------------------------------------------------------------------------------//
+
+					algo = new Algorithme_flot_max("can_explication", 0, 0, 1400, 200, 0, 6, graphe, graphe2);
+
+
+					document.addEventListener('keydown', function(e) {
+						if (e.keyCode == 39) {
+							algo.suivant(true);
+						}
+					});
+				</script>
+			</article>
+		</div>
+	</div>
+
+	<footer class="container-fluid">
+		
+		<div class="row">
+			<div class="col-sm-4">
+				<p>
+					Auteur <br/> Alexandre Fauquette
+				</p>
+			</div>
+
+			<div class="col-sm-4">
+				<p>
+					Contact <br/> algo.pour.tous (at) gmail [dot] com
+				</p>
+			</div>
+
+			<div class="col-sm-4">
+				<p>
+					Hebergement <br/> <a href="http://www.rezomen.fr">Supélec Rezo</a>
+				</p>
+			</div>
+		</div>
+		
+	</footer>
+
+</body>
+
+</html>

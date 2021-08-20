@@ -1,0 +1,46 @@
+html {
+    height: 100%;
+}
+
+body {
+    margin: 0px;
+    background-color: #EEE !important;
+}
+
+p {
+    text-align: justify;
+}
+
+footer {
+    /*display: inline-block;*/
+    background-color: #000;
+    margin: 20px 0px 0px 0px;
+    padding-top: 5px;
+    text-align: center;
+    width: 100%;
+}
+
+footer p, footer a{
+    display: inline-block;
+    margin-left: 3%;
+    margin-right: 3%;
+    color: white;
+    text-align: center;
+}
+
+.presentation {
+    padding: 2%;
+    color: #111;
+}
+
+.presentation h2 {
+    text-align: center;
+}
+
+.presentation p {
+    text-indent: 30px;
+}
+
+#informations {
+    height: 100%;
+}

@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<!-- <script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+	  ga('create', 'UA-102891905-1', 'auto');
+	  ga('send', 'pageview');
+
+	</script> -->
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta charset="utf-8">
+
+	<title>
+		Créer un labyrinthe
+	</title>
+
+	<link rel="stylesheet" type="text/css" href="CSS/general.css">
+	<link rel="stylesheet" type="text/css" href="CSS/article.css">
+	<link rel="stylesheet" type="text/css" href="CSS/liste_cours.css">
+
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+</head>
+
+
+<style>
+	canvas {
+		max-height: 90%;
+		max-width: 98%;
+		margin: auto !important;
+		display: block;
+	}
+</style>
+
+<body>
+
+	<nav class="navbar navbar-default navbar-static-top">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="index.htm">Algo pour tous</a>
+			</div>
+			<div id="navbar" class="navbar-collapse collapse">
+				<ul class="nav navbar-nav">
+					<li>
+						<a href="Recherche.htm">Liste des cours</a>
+					</li>
+					<!--
+					<li>
+						<a href="#">Liste des parcours (en traveaux)</a>
+					</li>
+					<li>
+						<a href="#">Animations (en traveaux)</a>
+					</li>
+					-->
+					<li>
+						<a href="FAQ.htm">FAQ</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+
+	<div class="container-fluid">
+		<div class="row">
+			<article class="col-lg-10 col-lg-offset-1">
+				<h1>Créer son labyrinthe</h1>
+
+				<p>
+					Voici une animation créée uniquement pour le plaisir, sans but pédagogique, car personnelement, je trouve très estétique de voire s'étendre, un labyrinthe en noir et blanc. Ce n'est bien sur qu'un avis personnel. Pour les curieux, j'utilise ce qui a été
+					présenté à la fin de l'article sur les arbres couvrant de poids minimal, que vous pouvez retrouver <a href='Arbre couvrant de poids minimal.htm'>ici</a>. Vous remaquerez que j'utilise l'algorithme de Prim, et non celui de Kruskal.
+				</p>
+
+				<p>
+					Puis une fois que l'on a un labyrinthe, si vous ne voyez pas la solution, tout est prévue. Avec le boutton "chercher la solution", on va parcourir la labyrinthe (l'arbre) avec un parcourt dont vous pouvez retrouver l'explication <a href='Parcourt_de_graphe.htm'>ici</a>.
+					Pour espérer aller un peu plus vite, on ne prend pas le premier d'une file ni le dernier d'une pile.
+				</p>
+
+				<p>
+					Pour faire fonctionner l'animation, ça se passe en 4 étapes :
+				</p>
+
+				<ol>
+					<li>Créer le labyrinthe. Pour choisir les dimentions, vous avez deux curseurs. Attention, si vous modifier par la suite un des curseurs, le labyrinthe repart de zero.</li>
+					<li>Pour supprimer des murs et ainsi créer le labyrinthe, vous pouvez y aller :
+						<ul>
+							<li>Mur par mur en utilisant le boutton "avancer" ou la flèche droite de votre clavier.</li>
+							<li>Lancer le programme pour qu'il aille seul jusqu'au bout grace au boutton "Finir"</li>
+						</ul>
+					</li>
+					<li>Pour trouver la solution, utilisez le boutton ... "Chercher la solution". Vous verrz en rouge les cases visitées, puis le trajet retour en vert, en supprimant les cases rouges innutiles.</li>
+					<li>Enfin si vous voulez cacher la solution, il y a un boutton pour ça.</li>
+				</ol>
+
+				<div class="row">
+					<div class="col-sm-8">
+						<canvas id='laby'>[canvas non supporté par votre ordinateur]</canvas>
+					</div>
+					<div class="col-sm-4">
+						<div class="btn-group btn-group-justified" role="group">
+							<div class="btn-group" role="group">
+								<button id="finir" type="button" class="btn btn-default" onclick="finir()">Finir le labyrinthe</button>
+							</div>
+						</div>
+						<div class="btn-group btn-group-justified" role="group">
+							<div class="btn-group" role="group">
+								<button id="chercher" type="button" class="btn btn-default disabled" onclick="resoudre()">Chercher la solution</button>
+							</div>
+						</div>
+						<div class="btn-group btn-group-justified" role="group">
+							<div class="btn-group" role="group">
+								<button id="cacher" type="button" class="btn btn-default disabled" onclick="cacher()">Cacher la solution</button>
+							</div>
+						</div>
+						<div class="btn-group btn-group-justified" role="group">
+							<div class="btn-group" role="group">
+								<button type="button" class="btn btn-default" onclick="initialiser()">initialiser</button>
+							</div>
+							<div class="btn-group" role="group">
+								<button type="button" class="btn btn-default" onClick="etape()">avancer</button>
+							</div>
+						</div>
+
+						<form name="reglages">
+
+							<label id="hauteure_txt">hauteur : 15</label>
+							<input id="hauteure" value="15" max="100" min="5" step="1" oninput="modifier_Y()" type="range">
+
+							<label id="largeure_txt">largeure : 40</label>
+							<input id="largeure" value="40" max="100" min="5" step="1" oninput="modifier_X()" type="range">
+
+							<p id="txt"></p>
+						</form>
+					</div>
+				</div>
+			</article>
+		</div>
+	</div>
+
+	<footer class="container-fluid">
+		
+		<div class="row">
+			<div class="col-sm-4">
+				<p>
+					Auteur <br/> Alexandre Fauquette
+				</p>
+			</div>
+
+			<div class="col-sm-4">
+				<p>
+					Contact <br/> algo.pour.tous (at) gmail [dot] com
+				</p>
+			</div>
+
+			<div class="col-sm-4">
+				<p>
+					Hebergement <br/> <a href="http://www.rezomen.fr">Supélec Rezo</a>
+				</p>
+			</div>
+		</div>
+		
+	</footer>
+
+
+
+
+
+	<script>
+		var canvas = document.getElementById('laby');
+		var pinceau = canvas.getContext('2d');
+		var dx = 10;
+		var dy = 10;
+
+		var X = 50;
+		var Y = 15;
+
+		var poids = [];
+		var frontiere = [];
+		var sommets = [];
+		var solution = [];
+		var liste_adjacence_arbre = [];
+
+		modifier_X = function() {
+			var x = Number(document.forms.reglages.largeure.value);
+			document.getElementById("largeure_txt").innerHTML = "largeure " + x;
+			if (X != x) {
+				X = x;
+				initialiser();
+			}
+
+		}
+		modifier_Y = function() {
+			var y = Number(document.forms.reglages.hauteure.value);
+			document.getElementById("hauteure_txt").innerHTML = "hauteure " + y;
+			if (y != Y) {
+				Y = y;
+				initialiser();
+			}
+
+		}
+
+
+		resoudre = function() {
+
+			$(function() {
+				//.addClass("disabled");
+				//.removeClass("disabled");
+				$("#finir").addClass("disabled");
+				$("#chercher").addClass("disabled");
+				$("#cacher").addClass("disabled");
+			});
+
+
+			var pile = [
+				[0, 0]
+			];
+			var vues = [];
+
+
+			retrouver_chemin = function() {
+				var s = vues.pop();
+				var x = solution[solution.length - 1][0];
+				var y = solution[solution.length - 1][1];
+
+				if (liste_adjacence_arbre[x][y].findIndex(function(a) {
+						return (s[0] == a[0] && s[1] == a[1]);
+					}) >= 0) {
+					solution.push(s);
+					pinceau.fillStyle = "green";
+					pinceau.fillRect((s[0] * 2 + 1) * dx, (s[1] * 2 + 1) * dy, dx, dy);
+					pinceau.fillRect(((s[0] + x) + 1) * dx, ((s[1] + y) + 1) * dy, dx, dy);
+
+				} else {
+					pinceau.fillStyle = "white";
+					pinceau.fillRect((s[0] * 2 + 1) * dx, (s[1] * 2 + 1) * dy, dx, dy);
+				}
+
+				if ((solution[solution.length - 1][0] != 0 || solution[solution.length - 1][1] != 0)) {
+					setTimeout(retrouver_chemin, 10);
+				} else {
+					pinceau.fillStyle = "green";
+					pinceau.fillRect(0, 0, 2 * dx, 2 * dy);
+
+					$(function() {
+						$("#finir").addClass("disabled");
+						$("#chercher").addClass("disabled");
+						$("#cacher").removeClass("disabled");
+					});
+				}
+			}
+
+			explorer = function() {
+
+				pile.sort(function(a, b) {
+					return a[0] + a[1] - b[0] - b[1]
+				});
+
+				var s = pile.pop();
+
+				vues.push(s);
+
+				for (var k = 0; k < liste_adjacence_arbre[s[0]][s[1]].length; k++) {
+					if (vues.findIndex(function(a) {
+							return (liste_adjacence_arbre[s[0]][s[1]][k][0] == a[0] && liste_adjacence_arbre[s[0]][s[1]][k][1] == a[1]);
+						}) < 0) {
+						pile.push(liste_adjacence_arbre[s[0]][s[1]][k]);
+					}
+				}
+
+				pinceau.fillStyle = "red";
+				pinceau.fillRect((vues[vues.length - 1][0] * 2 + 1) * dx, (vues[vues.length - 1][1] * 2 + 1) * dy, dx, dy);
+
+				if (vues[vues.length - 1][0] != (X - 1) || vues[vues.length - 1][1] != (Y - 1)) {
+					setTimeout(explorer, 10);
+				} else {
+					var s = vues.pop()
+
+					solution = [
+						[X - 1, Y - 1]
+					];
+
+					pinceau.fillStyle = "green";
+					pinceau.fillRect(((X - 1) * 2 + 1) * dx, ((Y - 1) * 2 + 1) * dy, 2 * dx, 2 * dy);
+					retrouver_chemin();
+				}
+			}
+
+			explorer();
+
+		}
+
+
+		cacher = function() {
+			for (var k = 0; k < solution.length - 1; k++) {
+				pinceau.fillStyle = "white";
+				var x1 = (solution[k][0] + solution[k + 1][0]) / 2;
+				var y1 = (solution[k][1] + solution[k + 1][1]) / 2;
+				var x2 = solution[k + 1][0];
+				var y2 = solution[k + 1][1];
+				pinceau.fillRect((x1 * 2 + 1) * dx, (y1 * 2 + 1) * dy, dx, dy);
+				pinceau.fillRect((x2 * 2 + 1) * dx, (y2 * 2 + 1) * dy, dx, dy);
+
+			}
+			pinceau.fillStyle = "green";
+			pinceau.fillRect(0, 0, 2 * dx, 2 * dy);
+
+			document.getElementById("cacher").innerHTML = "Afficher";
+			document.getElementById("cacher").onclick = afficher;
+		}
+
+		afficher = function() {
+			for (var k = 0; k < solution.length - 1; k++) {
+				pinceau.fillStyle = "green";
+				var x1 = (solution[k][0] + solution[k + 1][0]) / 2;
+				var y1 = (solution[k][1] + solution[k + 1][1]) / 2;
+				var x2 = solution[k + 1][0];
+				var y2 = solution[k + 1][1];
+				pinceau.fillRect((x1 * 2 + 1) * dx, (y1 * 2 + 1) * dy, dx, dy);
+				pinceau.fillRect((x2 * 2 + 1) * dx, (y2 * 2 + 1) * dy, dx, dy);
+
+			}
+			document.getElementById("cacher").innerHTML = "Cacher";
+			document.getElementById("cacher").onclick = cacher;
+		}
+
+		initialiser = function() {
+
+			$(function() {
+				//.addClass("disabled");
+				//.removeClass("disabled");
+				$("#finir").addClass("disabled");
+				$("#chercher").addClass("disabled");
+				$("#cacher").addClass("disabled");
+			});
+
+
+			canvas.width = (2 * X + 1) * dx;
+			canvas.height = (2 * Y + 1) * dy;
+
+
+			pinceau.fillStyle = "black";
+			pinceau.fillRect(0, 0, (2 * X + 1) * dx, (2 * Y + 1) * dy);
+
+			pinceau.fillStyle = "white";
+			pinceau.fillRect(0, 0, 2 * dx, 2 * dy);
+			pinceau.fillRect((2 * X - 1) * dx, (2 * Y - 1) * dy, 2 * dx, 2 * dy);
+
+			poids = [];
+			sommets = [];
+
+			liste_adjacence_arbre = [];
+			solution = [];
+
+			for (var i = 0; i < X; i++) {
+				var x = (2 * i + 1) * dx;
+				poids.push([]);
+				sommets.push([]);
+				liste_adjacence_arbre.push([]);
+
+				for (var j = 0; j < Y; j++) {
+					var y = (2 * j + 1) * dy;
+					pinceau.fillRect(x, y, dx, dy);
+
+					poids[i].push([-1, -1, -1, -1]);
+					sommets[i].push(0);
+					liste_adjacence_arbre[i].push([]);
+				}
+			}
+
+			for (var x = 0; x < X; x++) {
+				for (var y = 0; y < Y; y++) {
+					if (y < Y - 1) {
+						poids[x][y][2] = Math.random();
+						poids[x][y + 1][0] = poids[x][y][2]
+					}
+
+					if (x < X - 1) {
+						poids[x][y][1] = Math.random();
+						poids[x + 1][y][3] = poids[x][y][1]
+					}
+				}
+			}
+
+			frontiere = [
+				[0, 0, 2, 0, 1],
+				[0, 0, 1, 1, 0]
+			];
+
+			sommets[0][0] = 1;
+
+			$(function() {
+				//.addClass("disabled");
+				//.removeClass("disabled");
+				$("#finir").removeClass("disabled");
+				$("#chercher").addClass("disabled");
+				$("#cacher").addClass("disabled");
+			});
+		}
+
+		etape = function() {
+			if (frontiere.length > 0) {
+				frontiere.sort(function(a, b) {
+					return poids[a[0]][a[1]][a[2]] - poids[b[0]][b[1]][b[2]]
+				});
+
+				a = frontiere.shift();
+
+				//ajout de l'arete dans l'arbre
+				liste_adjacence_arbre[a[0]][a[1]].push([a[3], a[4]]);
+				liste_adjacence_arbre[a[3]][a[4]].push([a[0], a[1]]);
+
+				pinceau.fillStyle = "white";
+
+				var x1 = (1 + 2 * a[0]) * dx;
+				var x2 = (2 + 2 * a[3]) * dx;
+				var y1 = (1 + 2 * a[1]) * dy;
+				var y2 = (2 + 2 * a[4]) * dy;
+				pinceau.fillRect(x1, y1, x2 - x1, y2 - y1);
+
+
+				sommets[a[3]][a[4]] = 1;
+
+				//suppression des aretes innutiles
+				var i = 0;
+				while (i < frontiere.length) {
+					if (sommets[frontiere[i][0]][frontiere[i][1]] == sommets[frontiere[i][3]][frontiere[i][4]]) {
+
+						frontiere.splice(i, 1);
+					} else {
+						i = i + 1;
+					}
+				}
+
+				//ajout des aretes
+				var x2 = a[3];
+				var y2 = a[4];
+
+				if (x2 > 0 && sommets[x2 - 1][y2] == 0 && poids[x2][y2][3] != -1) {
+					frontiere.push([x2, y2, 3, x2 - 1, y2]);
+				}
+				if (x2 < X - 1 && sommets[x2 + 1][y2] == 0 && poids[x2][y2][1] != -1) {
+					frontiere.push([x2, y2, 1, x2 + 1, y2]);
+				}
+				if (y2 > 0 && sommets[x2][y2 - 1] == 0 && poids[x2][y2][0] != -1) {
+					frontiere.push([x2, y2, 0, x2, y2 - 1]);
+				}
+				if (y2 < Y - 1 && sommets[x2][y2 + 1] == 0 && poids[x2][y2][2] != -1) {
+					frontiere.push([x2, y2, 2, x2, y2 + 1]);
+				}
+
+
+			}
+			if (frontiere.length == 0) {
+				$(function() {
+					//.addClass("disabled");
+					//.removeClass("disabled");
+					$("#finir").addClass("disabled");
+					$("#chercher").removeClass("disabled");
+					$("#cacher").addClass("disabled");
+				});
+			}
+		}
+
+		finir = function() {
+			$(function() {
+				//.addClass("disabled");
+				//.removeClass("disabled");
+				$("#finir").addClass("disabled");
+				$("#chercher").addClass("disabled");
+				$("#cacher").addClass("disabled");
+			});
+			if (frontiere.length > 0) {
+				etape();
+				setTimeout(finir, 0);
+			} else {
+				$(function() {
+					//.addClass("disabled");
+					//.removeClass("disabled");
+					$("#finir").addClass("disabled");
+					$("#chercher").removeClass("disabled");
+					$("#cacher").addClass("disabled");
+				});
+			}
+		}
+
+		initialiser();
+
+		document.addEventListener('keydown', function(e) {
+			if (e.keyCode == 39) {
+				etape();
+			}
+		});
+	</script>
+
+</body>
+
+</html>

@@ -1,0 +1,26 @@
+#faq {
+    list-style: none;
+}
+
+#faq li {
+    /*border: 2px solid black !important;*/
+    border-radius: 10px;
+    background-color: #CCC;
+    max-width: 90%;
+    margin: 20px auto;
+    padding: 20px;
+    text-align: left;
+}
+
+#faq li:hover {
+    cursor: pointer;
+    background-color: #BBB;
+}
+
+#faq p {
+    text-indent: 30px;
+}
+
+#faq h2 {
+    font-size: 150%;
+}

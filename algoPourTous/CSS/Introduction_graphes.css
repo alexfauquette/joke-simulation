@@ -1,0 +1,31 @@
+/*
+#1B4DDB bleu fonce
+#6F73FF violet
+#47A2FF bleu claire
+#78CAE8 vert chelou fonce
+#8AFAFF vert chelou claire
+*/
+
+/*[name=reglages]{
+	display: none;
+}*/
+
+#Canvas1{
+	width: 59%; /*300px;*/
+	margin:0px;
+	padding: 0px;
+	float: left;
+}
+
+#Canvas2{
+	width: 39%;/*200px;*/
+	margin:0px 2px 20px 0px;
+	padding: 0px;
+	float: right;
+}
+
+#Canvas3{
+	width: 99%;/*500px;*/
+	margin:0px;
+	padding: 0px;
+}

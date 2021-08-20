@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+	  ga('create', 'UA-102891905-1', 'auto');
+	  ga('send', 'pageview');
+
+	</script>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta charset="utf-8">
+
+	<title>
+		Introduction aux graphes </title>
+
+	<link rel="stylesheet" type="text/css" href="CSS/general.css">
+	<link rel="stylesheet" type="text/css" href="CSS/article.css">
+	<link rel="stylesheet" type="text/css" href="CSS/liste_cours.css">
+
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+	<nav class="navbar navbar-default navbar-static-top">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="index.htm">Algo pour tous</a>
+			</div>
+			<div id="navbar" class="navbar-collapse collapse">
+				<ul class="nav navbar-nav">
+					<li>
+						<a href="Recherche.htm">Liste des cours</a>
+					</li>
+					<!--
+					<li>
+						<a href="#">Liste des parcours (en traveaux)</a>
+					</li>
+					<li>
+						<a href="#">Animations (en traveaux)</a>
+					</li>
+					-->
+					<li>
+						<a href="FAQ.htm">FAQ</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+
+
+
+	<div class="container-fluid">
+		<div class="row">
+			<article class="col-lg-10 col-lg-offset-1">
+				<script type="text/javascript" src="JS/jquery-3.js"></script>
+				<link rel="stylesheet" type="text/css" href="CSS/Introduction_graphes.css">
+				<h1>Les Graphes (Introduction)</h1>
+
+				<p>
+					Vous avez sans doute déjà entendu ce mot : « graphe ». Vous l'associez sans doute aussi à de jolis petits dessins plein de ronds et de flèches. Mais savez vous vraiment ce qu'est un graphe ? Dans cet article, nous allons voir ensemble ce qu'est un graphe,
+					en partant de la représentations la plus intuitive, jusqu'aux définitions mathématiques, et leurs représentations dans un ordinateur.
+				</p>
+
+
+				<h2>Définitions</h2>
+
+				<p>Commençons par la base de la base. Un graphe c'est quoi ? D'après Larousse collèges, un graphe est :</p>
+				<blockquote> “Error 404 definition not found”</blockquote>
+
+				<p>Bon, tant pis pour Larousse, voici une définition&nbsp;:</p>
+				<blockquote>“Un graphe est une représentation d'un ensemble d'objets et de leurs relations.”</blockquote>
+
+				<p>C'est une définition à la fois vague et claire. Donc prenons ces quelques exemples.
+					<br/> Pour une carte, les <strong>éléments</strong> sont les carrefours, et les <strong>liens</strong> entre eux sont les routes.
+
+					<br/> Pour le réseau électrique, les <strong>éléments</strong> sont les producteurs et les consommateurs d'électricité, et les <strong>liens</strong> entre eux sont les fils électriques.
+
+					<br/> Enfin pour les taux d'échanges de matière première, les <strong>éléments</strong> sont les matières, et les <strong>liens</strong> sont les possibilités d'échanger telle matière contre telle autre.
+				</p>
+				<p>
+					Éléments et liens ce sont des jolis mots, mais ça fait pas très sérieux et les dessins c'est joli, mais ça prend du temps à faire. Du coup, on va utiliser un autre vocabulaire et d'autres symboles. Premièrement pour être sûr de bien se comprendre, et
+					aussi parce que ça donne l'air plus sérieux.
+				</p>
+
+
+				<ul>
+					<li>
+						<strong>Sommets</strong> : Les sommets, c'est ce qui correspond à « l'élément » dans notre définition. Et on le représente par un cercle. Si on veut, on peut lui donner un nom, ou un numéro que l'on écrira au milieu du cercle.
+					</li>
+
+					<li>
+						<strong>Arêtes</strong> : Une arête est un lien entre deux sommets. Il y a plusieurs types d'arêtes, ce qui donne plusieurs types de graphes.
+					</li>
+
+					<li>
+						<strong>Les arêtes orientées</strong> : On les représentes par une flèche, et elles servent à indiquer si le lien va du sommet A au sommet B ou de B vers A. On parle alors de <strong>graphe orienté</strong>. On s'en sert par exemple pour le réseau
+						électrique, car l'électricité va du producteur vers le consommateur et non l'inverse. On s'en sert aussi pour les taux d'échanges, car ce n'est pas pareil d'échanger de l'or contre de la pierre ou de la pierre contre de l'or.
+					</li>
+
+					<li>
+						<strong>Les arêtes non orientées</strong> : On les représente simplement par des traits. Il n'y a pas de différence entre aller de A vers B ou de B vers A. On parle alors de <strong>graphe non-orienté</strong>. On s'en sert par exemple pour la carte
+						routière. Car à moins qu'il y ait un sens-interdit, il n'y a pas de différence entre prendre une route dans un sens ou dans l'autre.
+					</li>
+
+					<li>
+						<strong>Les arêtes pondérées</strong> : Par moment, on a besoin de plus d'information sur le lien entre les éléments. Par exemple, la distance entre deux carrefours, ou encore la taux de change entre deux matières premières. Du coup, on ajoute ce
+						que l'on appelle des pondérations. Ce sont des informations que l'on vient mettre sur les arêtes. On obtient alors un <strong>graphe pondéré</strong>. On peut aussi dire qu'on attribue un <strong>poids</strong> à l'arête.
+					</li>
+
+				</ul>
+
+				<p>
+					Bon ok, c'est pas du vocabulaire très compliqué. Mais c'est toujours mieux dans une discution de dire <q>Je travaille sur des graphes orientés pondérés</q>au lieu de dire <q>Je travail sur des graphes avec des flèches qui ont des poids</q>. Après
+					c'est juste mon avis ;)
+				</p>
+
+
+
+				<h2>Écriture mathématique</h2>
+
+				<p>
+					On a dit qu'un graphe est un ensemble de <strong>sommets</strong> (d'éléments) et de leurs <strong>arêtes</strong> (leurs relations)
+					<br> L'écriture mathématique est donc tout simplement G = (S,A) avec S l'ensemble des sommets, et A l'ensemble des arêtes. Au passage, on a A qui est inclus dans S² ce qui veut simplement dire qu'une arête s'écrit comme une paire de sommets. Pour
+					mieux comprendre, voici un exemple&nbsp;avec un <strong>graphe orienté</strong> et sa représentation mathématique:
+				</p>
+
+				<img src="images/exemple graphe1.png" />
+
+				<p>
+					Jusqu'à présent, on a considéré que l'arête (i&nbsp;; j) est une arête qui va du sommet i vers le sommet j. On avait donc un graphe orienté.
+					<br> Maintenant on va représenter un <strong>graphe non-orienté</strong> mathématiquement, cela s'écrit G = (S,A)
+					<br> Oui oui, c'est exactement la même chose. Normal, car un graphe non-orienté a lui aussi des sommets et des arrêtes. La seule différence est qu'ici, nous allons considérer que l'arête (i&nbsp;; j) est l'arête qui «&nbsp;<strong>relie</strong>					les sommets i et j&nbsp;», et non l'arête qui «&nbsp;<strong>va</strong> de i vers j&nbsp;». La différence est peut être subtile, mais elle permet de dire que maintenant (1&nbsp;; 3) = (3&nbsp;; 1). Avoir une arête qui relie 1 et 3, c'est la même
+					chose qu'avoir une arête reliant 3 et 1. Orienté ou non-orienté, dépend juste de comment vous interprétez le graphe.
+				</p>
+
+				<p>
+					Il ne nous reste plus qu'un type de graphe, le <strong>graphe pondéré</strong>. Cette fois on l'écrit G = (S,A,P) On a toujours S les sommets, les arêtes. Et en bonus, on a P qui est l'ensemble des pondérations. Si vous avez bien compris, vous vous
+					doutez qu'on a autant d’éléments dans P que dans A. Car la première valeur de P est la pondération de la première arête de A, la deuxième valeur de P correspond à la deuxième arête de A et ainsi de suite.
+					<br> Si vous voulez être sûr d'avoir compris, voici un graphe non-orienté et un graphe orienté pondéré avec leur représentation mathématique.
+				</p>
+
+				<h2>Représentation informatique</h2>
+
+				<h3>La matrice d'adjacence</h3>
+
+				<p>Pour être sûr de pouvoir représenter toutes les arêtes, on va réaliser un tableau, avec sur la ligne, le sommet de départ et sur la colonne le sommet d'arrivé. Donc si on prend la case de la ligne 2 et de la colonne 3, elle correspond à l'arête qui
+					va du sommet 2 vers le sommet 3. Il ne nous reste plus qu'a remplir ce tableau avec des «&nbsp;vrai&nbsp;» /&nbsp;«&nbsp;faux&nbsp;». On met Vrai (ou 1) si l'arête qui correspond à cette case existe, et on met Faux (ou 0) si l'arête n'existe pas.
+					<br> Avec ça, vous avez un <strong>graphe orienté</strong>. Si vous voulez qu'il soit <strong>non orienté</strong>, il suffit que pour chaque arête allant de i vers j vous mettiez aussi une arête qui va de j vers i. Ce qui va donner un <strong>tableau symétrique</strong>					sur sa diagonale, comme celui ci. On parle aussi de matrice symétrique.
+					<br> Si vous voulez avoir un <strong>graphe pondéré</strong>, il suffit de mettre les pondérations à la place des Vrai. Comme ça, chaque arête serra associée à la valeur de sa pondération.
+				</p>
+
+
+				<h3>La liste d'adjacence</h3>
+
+				<p>On vient de voir une méthode qui est plutôt pratique, et facile à lire pour représenter un graphe. Mais elle a quand même un problème. Elle prend de la <strong>place mémoire</strong> pour rien. En effet, quelque que soit le nombre d'arêtes présentes
+					dans votre graphe, votre tableau sera toujours aussi grand. Car sa taille ne dépend que du nombre de nœud.
+					<br> Pour comprendre le problème, voici un exemple.
+				</p>
+
+				<p>Le graphe est très simple. Mais plus on ajoute de nœud, plus il y a d'espace mémoire inutilisé. On va donc chercher une représentation qui prend moins de place.
+				</p>
+
+
+				<p>
+					Une meilleur représentation (du point de vue de l'espace mémoire) est la liste d'adjacence.
+					<br> On commence par faire une liste de tous les sommets. Puis à chaque sommet, on va associer la <strong>liste de ses voisins</strong>. C'est à dire la liste des sommets vers lesquels on peut aller.
+				</p>
+				<p>
+					Pour mieux comprendre, reprenons l'exemple précédent.
+				</p>
+				<ul>
+					<li>A partir du sommet 1, on peut aller vers 1 ou vers 2</li>
+					<li>A partir du sommet 2, on peut aller vers 1 ou vers 3</li>
+					<li>A partir du sommet 3, on peut aller vers 2 ou vers 4</li>
+					<li>etc etc …</li>
+				</ul>
+				<p>
+					Ce qui donne la représentation située en dessous.
+				</p>
+
+				<p>
+					Maintenant, imaginons que l'on veut pondérer nos arêtes. Pour changer, on va les pondérer avec des lettres.
+					<br> Au lieu de dire : « De 1, on peut aller vers 1 ou 2 » on dit « De 1, on peut aller vers 1 avec la pondération 'a' ou 2 avec la pondération 'b' »
+					<br> Voilà comment on représenterait ce nouveau graphe.</p>
+
+				<p>
+					Vous pouvez donc faire des graphes <strong>pondérés</strong>, <strong>orientés</strong> ou <strong>non-orientés</strong>.
+				</p>
+
+				<h3>Comment choisir entre les représentations</h3>
+
+				<p>
+					On serait tenté de dire que la liste est meilleure que la matrice. En effet, elle prend <strong>moins d'espace mémoire</strong>. Mais ce n'est pas la seule chose à prendre en compte. Par exemple, si vous avez très souvent besoin de savoir si deux
+					sommets sont reliés par une arête. Avec la matrice, vous n'avez qu'à regarder la case qui correspond, alors qu'avec la liste vous devez parcourir la liste des voisins du sommet en question, ce qui est plus lent.
+				</p>
+
+				<h2>Conclusion</h2>
+
+				<p>
+					Maintenant vous savez comment on définit mathématiquement un graphe, ce qui peut être utile pour les démonstrations des algorithmes. Vous connaissez deux méthodes pour écrire informatiquement un graphe. Vous ne savez pas quoi en faire ? Pas de problème,
+					les algorithmes sur les graphes, ce n'est pas ce qui manque en informatique.
+				</p>
+				<p>
+					Comme promis, vous pouvez trouver en dessous une application qui vous permet de tracer le graphe que vous voulez. Le nom des sommets et les pondérations des arêtes sont donnés automatiquement pour que ce soit plus simple.
+				</p>
+				<ul>
+					<li>Avec "ajouter" enfoncé, un clic permet de créer un nouveau sommet. Pour une arête, cliquez sur le sommet de départ, et relachez sur le sommet d'arrivée
+					</li>
+					<li>Avec "déplacer" enfoncé, vous pouvez déplacer les sommets déjà existants (méthode cliquez déposez)
+					</li>
+					<li>Avec "supprimer" enfoncé, un clic sur un sommet ou une arête la supprime (hoo !!! quelle surprise !)
+					</li>
+				</ul>
+				<p>
+					Grace aux boutons, vous pouvez choisir le type de graphe (pondéré/non-pondéré et orienté/non-orienté), le type de représentation mathématique ainsi que la représentation informatique de votre graphe.
+				</p>
+				<p>Amusez vous bien !</p>
+
+
+
+				<form name="etat" id="etat">
+					<div class="btn-group btn-group-justified" role="group" aria-label="...">
+						<div class="btn-group" role="group">
+							<button type="button" class="btn btn-default" name="add" onclick="ajouter(this.form)">ajouter <kbd>A</kbd></button>
+						</div>
+						<div class="btn-group" role="group">
+							<button type="button" class="btn btn-default" name="dep" onclick="deplacer(this.form)">déplacer <kbd>D</kbd></button>
+						</div>
+						<div class="btn-group" role="group">
+							<button type="button" class="btn btn-default" name="supp" onclick="supprimer(this.form)">supprimer <kbd>S</kbd></button>
+						</div>
+					</div>
+				</form>
+
+				<br>
+				<canvas id="Canvas1" width="600px" height="400px" style="background-color:white">
+						[canvas non géré par votre navigateur]
+					</canvas>
+
+				<canvas id="Canvas2" width="400px" height="400px" style="background-color:white">
+						[canvas non géré par votre navigateur]
+					</canvas>
+
+				<br>
+				<canvas id="Canvas3" width="1000px" height="50px" style="background-color:white">
+						[canvas non géré par votre navigateur]
+					</canvas>
+
+
+				<br>
+				<div id="caracteristiques">
+					<div class="btn-group" role="group" aria-label="type de graphe">
+						<button type="button" class="btn btn-default" onclick="orienter_graphe()">Orienté</button>
+						<button type="button" class="btn btn-default" onclick="desorienter_graphe()">Non-Orienté</button>
+					</div>
+
+					<div class="btn-group" role="group" aria-label="type de graphe">
+						<button type="button" class="btn btn-default" onclick="ponderer()">Pondéré</button>
+						<button type="button" class="btn btn-default" onclick="deponderer()">Non-Pondéré</button>
+					</div>
+
+					<div class="btn-group" role="group" aria-label="représentation">
+						<button type="button" class="btn btn-default" onclick="representer_matrice()">Matrice</button>
+						<button type="button" class="btn btn-default" onclick="representer_liste()">Liste</button>
+					</div>
+
+					<div class="btn-group" role="group" aria-label="représentation">
+						<button type="button" class="btn btn-default" onclick="representer_SA()">G=(S,A)</button>
+						<button type="button" class="btn btn-default" onclick="representer_SAP()">G=(S,A,P)</button>
+					</div>
+				</div>
+
+
+
+				<form name="reglages">
+					<label>Rayon des sommets</label>
+					<input id="rayon" value="20" max="50" min="10" step="1" onchange="modifierR()" type="range">
+					<label>Espacement horizontal</label>
+					<input id="pas_horiz" value="30" max="100" min="10" step="5" onchange="modifier_pas()" type="range">
+					<label>Espacement vertical</label>
+					<input id="pas_verti" value="30" max="100" min="10" step="5" onchange="modifier_pas()" type="range">
+
+				</form>
+
+
+
+				<!-- 	Telechargement des objets	 -->
+				<script src="JS/Objet_noeud.js"></script>
+				<script src="JS/Objet_arete.js"></script>
+				<script src="JS/Objet_graphe.js"></script>
+
+				<!-- 	script principal	 -->
+
+				<script src="JS/Introduction_graphes.js"></script>
+
+			</article>
+		</div>
+	</div>
+
+	<footer class="container-fluid">
+		
+		<div class="row">
+			<div class="col-sm-4">
+				<p>
+					Auteur <br/> Alexandre Fauquette
+				</p>
+			</div>
+
+			<div class="col-sm-4">
+				<p>
+					Contact <br/> algo.pour.tous (at) gmail [dot] com
+				</p>
+			</div>
+
+			<div class="col-sm-4">
+				<p>
+					Hebergement <br/> <a href="http://www.rezomen.fr">Supélec Rezo</a>
+				</p>
+			</div>
+		</div>
+		
+	</footer>
+
+
+</body>
+
+</html>

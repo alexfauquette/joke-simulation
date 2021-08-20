@@ -1,0 +1,24 @@
+h1 {
+    text-align: center;
+    font-size: 30px !important;
+}
+
+h2 {
+    margin-top: 0px;
+    font-size: 20px !important;
+}
+
+#amateur, #enseignant {
+    background-color: #EEE;
+    padding-bottom: 20px;
+}
+
+#etudiant {
+    background-color: #BBB;
+    padding-bottom: 20px;
+}
+
+img {
+    max-width: 90%;
+    max-height: 90%;
+}

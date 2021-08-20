@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+	  ga('create', 'UA-102891905-1', 'auto');
+	  ga('send', 'pageview');
+
+	</script>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta charset="utf-8">
+
+	<title>
+		parcours de graphe </title>
+
+	<link rel="stylesheet" type="text/css" href="CSS/general.css">
+	<link rel="stylesheet" type="text/css" href="CSS/article.css">
+	<link rel="stylesheet" type="text/css" href="CSS/liste_cours.css">
+
+
+	<!-- utilisation hors ligne -->
+	<link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" href="bootstrap/css/bootstrap-theme.min.css">
+	<script src="bootstrap/js/bootstrap.min.js"></script>
+
+
+
+
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+
+	<!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>-->
+	<script src="JS/query.min.js"></script>
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+	<nav class="navbar navbar-default navbar-static-top">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+				<a class="navbar-brand" href="index.htm">Algo pour tous</a>
+			</div>
+			<div id="navbar" class="navbar-collapse collapse">
+				<ul class="nav navbar-nav">
+					<li>
+						<a href="Recherche.htm">Liste des cours</a>
+					</li>
+					<!--
+					<li>
+						<a href="#">Liste des parcours (en traveaux)</a>
+					</li>
+					<li>
+						<a href="#">Animations (en traveaux)</a>
+					</li>
+					-->
+					<li>
+						<a href="FAQ.htm">FAQ</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+
+
+
+
+
+
+
+
+
+
+	<!--
+
+<a href="#" title="Header" data-toggle="popover" data-trigger="hover" data-content="Some content">Hover over me</a>
+
+-->
+
+
+
+
+
+
+
+
+
+
+	<div class="container-fluid">
+		<div class="row">
+			<article class="col-lg-10 col-lg-offset-1">
+				<script type="text/javascript" src="JS/jquery-3.js"></script>
+
+
+
+				<script type="text/javascript" src="JS/Objet_pile.js"></script>
+				<script type="text/javascript" src="JS/Objet_file.js"></script>
+				<script type="text/javascript" src="JS/labitynthe.js"></script>
+				<script type="text/javascript" src="JS/Algorithme_parcourt.js"></script>
+				<script type="text/javascript" src="JS/Algorithme_coloriage.js"></script>
+
+
+
+
+
+				<h1>parcours de graphe</h1>
+
+				<p>Si vous ne savez pas ce qu'est un graphe, vous pouvez aller faire un tour sur <a href="Introduction aux graphes.htm">cette page</a>. Mais savoire ce qu'est un graphe c'est bien, savoir ce que l'on peut faire avec, c'est mieux. Ça tombe bien,
+					car nous allons voire ce qu'il y a de plus basique et de plus utile sur un graphe, le parcourir. Et parce que je suis généreux, on ne va pas voir un, mais deux algorithmes de parcours de graphe.
+				</p>
+
+				<h2>Un exemple en fil d'Ariane</h2>
+
+				<p>Comme un exemple vaut mieux qu'un long discourt, on va traiter le parcours de graphe à partir d'un exemple&nbsp;: le labyrinthe. L'objectif est de <strong>parcourir</strong> tout le labyrinthe, ou simplement de trouver un chemin vers la sortie, c'est
+					au choix. Ci dessous, deux labyrinthes qui nous serviront d'illustration.
+				</p>
+
+				<img alt="deux labyrinthes qui serviront d'exemple (un rectangulaire et un circulaire)" src="images/labyrinthe1.svg" width="200px" height="100px" />
+
+				<p>La première question à se poser en informatique, c'est la <strong>représentation</strong>. Car il faut bien expliquer à l'ordinateur comment est construit notre labyrinthe. Qu'il sache au moins où il peut aller et où il ne peut pas passer. En regardant
+					le premier labyrinthe dessiné au dessus, on pourrait se dire qu'un tableau dervait suffire. Une fois le lanyrinthe découpé en cases, il ne reste plus qu'à indiquer pour chaque case les côtés qui sont murés
+					et ceux qui ne le sont pas. Voici ce que donne cette découpe sur le premier labyrinthe.</p>
+
+				<img alt="exemple de représentation du premier labyrinthe comme un tableau" src="images/labyrinthe2.svg" />
+
+				<p>Avec le deuxième labyrinthe, ça se complique. Les chemins sont tous circulaire. On pourait le découper en arcs de cercle, mais ça devient beaucoup plus laborieux. On aurait pue faire bien pire en mettant des ponts et des tunels. Là, utiliser
+					un découpage aurait été impossible. Classiquement, coder ce genre de problème, on utilise un <strong>graphe</strong> (je suis sûr que vous vous en doutiez). Car au fond, un labyrinthe ou même une carte quelconque, ce ne sont que des intersections et
+					des culs-de-sac que l'on va représenter par des <strong>nœuds</strong>. Et les couloirs qui relient ces intersections sont représentés par des <strong>arêtes</strong>. Si vous voulez en plus montrer que tel couloir est plus grand qu'un autre, vous
+					pouvez toujours <strong>pondérer</strong> vos arêtes pour indiquer leurs distances.
+				</p>
+
+				<img alt "illustration des graphes représentant les labyrinthes d'exemple" src="images/labyrinthe3.svg" />
+
+				<p>Maintenant qu'on a choisi d'utiliser un graphe pour représenter le labyrinthe, il va falloir trouver comment le parcourir. Si on y réfléchi un peu, il va falloir un moyen de savoir par où on est déjà passé. Ce n'est pas trop dur, il suffit de le marquer
+					directement sur les nœuds du graphe que l'on est déjà passé par là. Il faut aussi retenir les nœuds dont on <strong>connaît l’existence</strong> mais qui n'a pas encore été parcouru. Par exemple, vous êtes à un carrefour, et vous voyez trois chemins. Vous allez en prendre un, mais il faut aussi que vous vous rappeliez qu'il y avait deux autres chemins possibles pour pouvoir y retourner si celui
+					que vous avez choisi n'est pas le bon.
+				</p>
+
+				<h2>File et Pile ou FIFO / FILO pour les intimes</h2>
+
+				<p>Pour retenir une liste d'éléments, vous avez besoin de pouvoir faire deux choses. Ajouter des éléments à la liste, et récupérer des éléments de la liste (oui je sais, c'est hyper complexe). Pour ce qui est d'ajouter les données, on va faire simple. On va les entasser
+					les unes aux dessus des autres. Par contre, pour ce qui est de les récupérer, on a <strong>deux possibilités</strong> principales. Soit on prend la donnée <strong>la plus récente</strong> (celle du dessus). Soit on prend <strong>la plus ancienne</strong> (celle du dessous). Ce qui nous donne donc
+					deux méthodes. Et c'est le choix d'une de ces deux méthodes qui va définir le parcours de notre graphe.
+				</p>
+
+				<h3>Pile / FILO </h3>
+				<p>Comme son nom l'indique, avec le modèle de <strong>pile</strong>, vous aller empiler les données les unes au dessus des autres. Un peu comme une <strong>pile d'assiettes</strong> ou une <strong>pile de cours à réviser</strong> (Attention, empiler
+					ses cours n'aide nullement à réviser). Et quand vous allez vouloir récupérer une donnée, vous allez faire le fainéant et prendre celle qui est <strong>sur le dessus</strong>. C'est à dire la dernière que vous avez ajoutée. Conclusion, la première
+					donnée qui rentre dans la pile sera aussi la dernière à sortir. Car avant, il faudra avoir enlevé toutes celles que vous avez mises par dessus. D'où le terme <strong>FILO&nbsp;: First In Last Out</strong>. La première donnée entrée est la dernière
+					à sortir. Comme le disait un certain JC, <strong>“les premiers seront les derniers”</strong>.
+					<br/>
+					Si c'est un peu obscure comme explication, voici un exemple visuel de pile. Utilisez les bouttons "ajouter" et "recupérer" pour modifier la <strong>pile</strong>. Les données mises en entrée sont les lettres dans l'ordre alphabétique.</p>
+
+
+				<div class="animation">
+					<canvas id="demo_Pile" width="420px" height="40px"></canvas>
+					<p id="reponse_pile">Element recuperé : </p>
+					<script type="text/javascript">
+						alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+
+						ajouter_lettre = function(objet_cible) {
+							var i = 0;
+							while (i < 25 && objet_cible.liste.indexOf(alphabet[i]) >= 0) {
+								i++ //On parcours les caracteres possibles
+							}
+							objet_cible.ajouter(alphabet[i], true, true);
+						}
+						var reponse_pile = document.getElementById("reponse_pile");
+						var demo_pile = new Pile([], 5, 5, 400, 30, "horizontal", 30, 50, "gray", "white", "demo_Pile");
+						demo_pile.tracer();
+					</script>
+					<button type="button" name="enlever_pile" onclick="reponse_pile.innerHTML = 'Element recuperé : '+demo_pile.recuperer(true,true);">recuperer</button>
+					<button type="button" name="ajouter_pile" onclick="ajouter_lettre(demo_pile);">ajouter</button>
+				</div>
+
+
+
+				<h3>File / FIFO alias PAPS</h3>
+				<p>Ici aussi, le nom est explicite, on va faire une <strong>file</strong>. Un peu comme les <strong>files d'attente</strong> des supermarchés ou pour ceux qui achètent tout sur internet, la <strong>file de la cantine</strong> (sauf que là, personne
+					ne double, même pas les profs). Du coup vos données qui arrivent, se mettent les unes après les autres. Et la donnée que vous prenez est la première à être arrivée. D'où le nom <strong>FIFO&nbsp;: First In First Out</strong>. On peut traduire ça
+					en français par <strong>PAPS&nbsp;: Premier Arrivé Premier Servi</strong>.
+					<br/>
+					Comme pour la pile, voici un exemple visuel illustrant le fonctionnement d'une <strong>file</strong>. Vous avez encore le droit à l'alphabet comme entrée.</p>
+
+
+				<div class="animation">
+					<canvas id="demo_File" width="420px" height="40px"></canvas>
+					<p id="reponse_file">Element recuperé : </p>
+					<script type="text/javascript">
+						var reponse_file = document.getElementById("reponse_file");
+						var demo_file = new File([], 5, 5, 400, 30, "horizontal", 30, 50, "gray", "white", "demo_File");
+						demo_file.tracer();
+					</script>
+					<button type="button" name="enlever_file" onclick="reponse_file.innerHTML = 'Element recuperé : '+demo_file.recuperer(true,true);">recuperer</button>
+					<button type="button" name="ajouter_file" onclick="ajouter_lettre(demo_file);">ajouter</button>
+				</div>
+
+
+
+
+				<h2>Enfin l'algorithme</h2>
+
+				<p>Vous allez vous rendre compte que en informatique, quand on a une bonne structure de données, le plus souvent l'algorithme s'écrit tout seul. Alors attention, voici l'algorithme que nous allons utiliser.</p>
+
+				<ol class="algo_texte">
+					<li>Mettre la/les <strong>entrée(s)</strong> dans la <strong>mémoire</strong></li>
+					<li>Tant que la <strong>mémoire</strong> n'est pas <strong>vide</strong> :
+						<ol>
+							<li><strong>prendre</strong> un élément de la <strong>mémoire</strong> et le marquer comme <strong>vu</strong></li>
+							<li><strong>prendre</strong> les <strong>voisins</strong> de cet élément</li>
+							<li>mettre les <strong>voisins</strong> qui n'ont pas été <strong>vu</strong> dans la <strong>mémoire</strong></li>
+						</ol>
+					</li>
+				</ol>
+
+				<p>Voilà ! C'est fini ! Quoi ? J'avais parlé du fait qu'il y avait deux types de parcours ? Bien sûr, et c'est le cas. J'ai utilisé le mot <strong>“mémoire”</strong> mais je n'ai pas dit si j'utilise une <strong>file</strong> ou une <strong>pile</strong>.</p>
+
+				<p>Si je prend une <strong>file</strong>, je vais réaliser ce qu'on appelle un <strong>parcours en largeur</strong>. C'est à dire qu'à chaque fois que je suis sur un sommet, je vais aller regarder tous ses voisins puis après je vais aller regarder tous
+					les voisins des voisins, puis les voisins des voisins des voisins et ainsi de suite.</p>
+
+				<p>Si par contre j'utilise une <strong>pile</strong>, je vais réaliser un <strong>parcours en profondeur</strong>. Je vais commencer par aller sur un des voisins de mon sommet actuel, puis sur un des voisins de ce voisin et ainsi de suite, jusqu'à tomber dans un cul-de-sac. A ce moment, je fais demi-tour jusqu'à retrouver de nouveaux sommets.</p>
+
+				<p>Si vous ne voyez pas bien pourquoi, voici une animation. Pour faire avancer l'algorithme, utilisez les <strong>flèches de votre clavier</strong>. Pour que cela fonctionne, il faut que vous mettiez bien l'algorithme <strong>au centre</strong> de votre écran.</p>
+
+
+
+
+
+
+
+
+
+
+				<div class="animation">
+
+					<canvas id="demo_parcourt_voisins" width="420px" height="40px"></canvas>
+					<br>
+					<canvas id="demo_parcourt_graphe" width="420px" height="315px"></canvas>
+					<canvas id="demo_parcourt_memoire" width="60px" height="315px"></canvas>
+					<canvas id="demo_parcourt_algo" width="300px" height="315px" style="background-color: lightgray"></canvas>
+
+					<br>
+					<button type="button" onclick="algo.set_nouvelle_memoire('file');">File/FIFO</button>
+					<button type="button" onclick="algo.set_nouvelle_memoire('pile');">Pile/FILO</button>
+
+					<br>
+
+					<button type="button" onclick="algo.modifier_vitesse(1);">lent</button>
+					<button type="button" onclick="algo.modifier_vitesse(2);">moyen</button>
+					<button type="button" onclick="algo.modifier_vitesse(3);">rapide</button>
+				</div>
+
+
+				<script type="text/javascript">
+					var voisins = new Pile([], 60, 5, 270, 30, "horizontal", 30, 50, "gray", "white", "demo_parcourt_voisins");
+
+					ctx = document.getElementById("demo_parcourt_voisins").getContext("2d");
+					ctx.beginPath();
+
+					ctx.strokeStyle = "black";
+					ctx.font = '14pt Calibri';
+
+					ctx.textAlign = 'center';
+					ctx.textBaseline = 'middle';
+					ctx.fillText("Voisins:", 30, 20);
+					ctx.stroke();
+
+
+
+					var memoire_pile = new Pile([], 5, 5, 50, 300, "vertical", 30, 50, "green", "white", "demo_parcourt_memoire");
+
+					var memoire_file = new File([], 5, 5, 50, 300, "vertical", 30, 50, "green", "white", "demo_parcourt_memoire");
+
+					var couleursNormal = ["blue", "white"];
+					var couleursEntree = ["green", "white"];
+					var couleursSortie = ["red", "white"];
+					var couleursAttente = ["orange", "white"];
+					var couleursVue = ["green", "white"];
+					var couleurMur = "red";
+					var couleurVoisins = "darkorange";
+					var x0 = 10;
+					var y0 = 10;
+					var dx = 400;
+					var dy = 300;
+					var Nx = 7;
+					var Ny = 7;
+					var entrees = [3];
+					var sorties = [47];
+					var murs = [
+						[2, 3],
+						[3, 4],
+						[8, 9],
+						[9, 10],
+						[13, 14],
+						[20, 21],
+						[19, 20],
+						[27, 28],
+						[22, 23],
+						[29, 30],
+						[34, 35],
+						[36, 37],
+						[41, 42],
+						[40, 41],
+						[47, 48],
+						[4, 11],
+						[5, 12],
+						[6, 13],
+						[9, 16],
+						[11, 18],
+						[12, 19],
+						[19, 26],
+						[18, 25],
+						[17, 24],
+						[16, 23],
+						[22, 29],
+						[24, 31],
+						[25, 32],
+						[26, 33],
+						[27, 34],
+						[33, 40],
+						[32, 39],
+						[31, 38],
+						[37, 44],
+						[38, 45],
+						[39, 46]
+					];
+
+					var g = new Labyrinthe("demo_parcourt_graphe", couleursNormal, couleursEntree, couleursSortie, couleursAttente, couleursVue, couleurMur, couleurVoisins, x0, y0, dx, dy, Nx, Ny, entrees, sorties, murs);
+					g.tracer_tout();
+
+
+					// Pour l'instant on laisse ca de cote
+
+					var couleursNormal = ['lightblue', 'black'];
+					var couleursActuel = ['blue', 'white'];
+
+					var algo = new Algorithme_parcourt("demo_parcourt_algo", couleursNormal, couleursActuel, g, memoire_pile, memoire_file, "pile", voisins, true);
+
+					document.addEventListener('keydown', function(e) {
+						if (e.keyCode == 39) {
+							algo.next();
+						} else if (e.keyCode == 37) {
+							algo.precedant();
+						}
+					});
+				</script>
+
+
+
+
+
+
+
+
+
+
+				<p>
+					Comme vous avez pu le constater, le parcours en <strong>profondeur</strong> a tendance à <strong>s'enfoncer</strong> le plus loin possible jusqu'à être forcé de faire demi-tour. Alors que le parcours en <strong>largueur</strong> lui s'étend plus
+					comme une <strong>goutte d'encre</strong> que l'on pose sur du papier.
+				</p>
+
+				<h2>C'est cool, mais à quoi ça sert ?</h2>
+
+				<p>Si vous trouvez ça cool c'est déjà pas mal. C'est vrai que comparé aux algorithmes qui trouvent le plus court chemin entre l'entrée et la sortie, cet algorithme fait un peu pitié. Mais il a une utilité insoupçonnée : le sceau. Pour ceux qui n'ont
+					pas compris, je parle de cet outil que l'on trouve dans les logiciels de dessin et qui permet de colorier d'un coup toute une région. Cette fois ci, il s'agit d'images. Donc la représentation est un tableau de pixels. Mais on peut s'imaginer que
+					chaque pixel est un sommet, et qu'il est relié à ses quatres voisins (haut, droite, bas et gauche) sauf bien sûr si il s'agit d'un bord ou d'un coin. Si vous voulez colorier toute une région c'est simple. Il suffit de remprendre l'algorithme précédent,
+					et remplacer "marquer le sommet comme vu" par "colorier le pixel". Si vous ne voyez pas comment modifier l'algorithme, voici la méthode utilisée ici. Bien entendu, il y a pas mal d'autres possibilités toutes basées sur la même idée.
+				</p>
+
+
+
+				<p>Pour l'<strong>initialisation</strong>, on va d'abord vérifier que la nouvelle couleur n'est pas la même que l'ancienne. Ça serait une perte de temps que de colorier en bleu une zone qui était déjà en bleu. Et ça ferait tourner en boucle mon algorithme.
+					Si la couleur est différente, alors on va mettre notre sommet en mémoire (une <strong>File</strong> ou un <strong>Pile</strong> au choix), on va retenir sa couleur (que j'appellerai "<strong>couleur initiale</strong>") et on va changer sa couleur.
+					Cela nous évitera de le mettre en mémoire une deuxième fois.
+				</p>
+
+				<p>Maintenant on rentre dans l'algorithme habituel. On prend les voisins. Cette fois, on ne met en mémoire que ceux qui sont de la même couleur que "<strong>couleur initiale</strong>". En même temps qu'on les ajoute à la mémoire, on change leur couleur.
+					Comme ça eux aussi, ne pourront pas être remis dans la mémoire plustard. En effet, on ne met un sommet en mémoire que s'il est de la même couleur que "<strong>couleur initiale</strong>". Comme à chaque fois qu'on met un sommet en mémoire on change
+					sa couleur, on ne pourra plus le mettre dans la mémoire. Conclusion, l'algorithme passe une seule fois par chaque pixel/sommet.
+				</p>
+
+				<p>Voici un exemple. Vous disposez de 5 couleurs de base pour faire un dessin. Un crayon pour dessiner vos zones, et bien sûr le seau pour les remplir et voir à quel point notre algorithme est merveilleux.
+					<br/> Contrairement à l'algorithme précédent, les voisins ne sont pas encadrés. Par contre, le sommet qui est pris en mémoire, sera encadré en noir. A partir de là, il n'est pas compliqué de trouver les voisins, ce sont les cases situées en haut,
+					en bas à droite et à gauche de ce sommet.
+					<br/> Au passage, un bouton vous permet entre deux remplissages de changer le type de mémoire. Sachez aussi que pendant le remplissage, vous ne pouvez rien faire d'autre, que changer la vitesse d'exécution. Les boutons File et Pile sont bloqués.
+					<br/>
+					<strong>Conseil</strong> : Evitez de tout colorier d'un coup avec le sceau. L'algorithme est rapide, mais même évitez d'en abuser car pour son implémentation ici est loin d'être optimale
+				</p>
+
+
+
+
+
+
+
+
+
+
+				<div class="animation">
+
+					<canvas id="demo_coloration_voisins" width="420px" height="40px"></canvas>
+					<br>
+					<canvas id="demo_coloration_graphe" width="420px" height="315px"></canvas>
+					<canvas id="demo_coloration_memoire" width="60px" height="315px"></canvas>
+					<canvas id="demo_coloration_algo" width="300px" height="315px" style="background-color: lightgray"></canvas>
+					<br>
+					<button id="couleur1" type="button" name="next" onclick="algo_coloration.set_nouvelle_couleur(0);"> bleu </button>
+					<button id="couleur1" type="button" name="next" onclick="algo_coloration.set_nouvelle_couleur(1);"> vert </button>
+					<button id="couleur2" type="button" name="next" onclick="algo_coloration.set_nouvelle_couleur(2);"> rouge </button>
+					<button id="couleur3" type="button" name="next" onclick="algo_coloration.set_nouvelle_couleur(3);"> orange </button>
+					<button id="couleur4" type="button" name="next" onclick="algo_coloration.set_nouvelle_couleur(4);"> rose </button>
+					<button id="crayon" type="button" name="next" onclick=" outil = 'pinceau';">crayon</button>
+					<button id="sceau" type="button" name="next" onclick=" outil = 'sceau';">sceau</button>
+
+					<button type="button" onclick="algo_coloration.set_nouvelle_memoire('file');">File/FIFO</button>
+					<button type="button" onclick="algo_coloration.set_nouvelle_memoire('pile');">Pile/FILO</button>
+
+
+					<br>
+
+					<button type="button" onclick="algo_coloration.modifier_vitesse(1);">lent</button>
+					<button type="button" onclick="algo_coloration.modifier_vitesse(2);">moyen</button>
+					<button type="button" onclick="algo_coloration.modifier_vitesse(3);">rapide</button>
+					<button type="button" onclick="algo_coloration.finir();">finir</button>
+
+				</div>
+
+
+				<script type="text/javascript">
+					var voisins_coloration = new Pile([], 60, 5, 270, 30, "horizontal", 30, 50, "gray", "white", "demo_coloration_voisins");
+
+					ctx = document.getElementById("demo_coloration_voisins").getContext("2d");
+					ctx.beginPath();
+
+					ctx.strokeStyle = "black";
+					ctx.font = '14pt Calibri';
+
+					ctx.textAlign = 'center';
+					ctx.textBaseline = 'middle';
+					ctx.fillText("Voisins:", 30, 20);
+					ctx.stroke();
+
+
+
+					var memoire_coloration_pile = new Pile([], 5, 5, 50, 300, "vertical", 30, 50, "green", "white", "demo_coloration_memoire");
+
+					var memoire_coloration_file = new File([], 5, 5, 50, 300, "vertical", 30, 50, "green", "white", "demo_coloration_memoire");
+
+					var couleursNormal = ["blue", "white"];
+					var couleursEntree = ["green", "white"];
+					var couleursSortie = ["red", "white"];
+					var couleursAttente = ["orange", "white"];
+					var couleursVue = ["pink", "white"];
+					var couleurMur = "red";
+					var couleurVoisins = "black";
+					var x0 = 10;
+					var y0 = 10;
+					var dx = 400;
+					var dy = 300;
+					var Nx = 10;
+					var Ny = 10;
+					var entrees = [];
+					var sorties = [];
+
+					var g = new Labyrinthe("demo_coloration_graphe", couleursNormal, couleursEntree, couleursSortie, couleursAttente, couleursVue, couleurMur, couleurVoisins, x0, y0, dx, dy, Nx, Ny, entrees, sorties, []);
+					g.tracer_tout();
+
+
+					// Pour l'instant on laisse ca de cote
+
+					var couleursNormal = ['lightblue', 'black'];
+					var couleursActuel = ['blue', 'white'];
+
+
+					var algo_coloration = new Algorithme_parcourt_couleur("demo_coloration_algo", couleursNormal, couleursActuel, g, memoire_coloration_pile, memoire_coloration_file, 'pile', voisins_coloration, true);
+
+					var outil = "pinceau";
+					algo_coloration.ETAT = 0;
+					algo_coloration.nouvelle_couleur = 3;
+
+					canvas_demo_coloration_graphe = document.getElementById("demo_coloration_graphe")
+
+
+					souris_detection = function(e) {
+						var rect = canvas_demo_coloration_graphe.getBoundingClientRect(); //objet DOM qui correspond au rectangle entourant le canvas
+						x_clique = (e.clientX - rect.left) * 420 / canvas_demo_coloration_graphe.offsetWidth;
+						y_clique = (e.clientY - rect.top) * 315 / canvas_demo_coloration_graphe.offsetHeight;
+
+
+						var n = algo_coloration.graphe.get_sommet(x_clique, y_clique);
+
+						if (outil == "pinceau" && n != 0 && e.buttons == 1 && (algo_coloration.ETAT == 0 || algo_coloration.ETAT == 6)) {
+							//si on est pas en plein milieu de l'algo
+							algo_coloration.graphe.etats[n - 1] = algo_coloration.nouvelle_couleur;
+							algo_coloration.graphe.annuler_cadres([n]);
+
+						}
+
+						if (outil == "sceau" && n != 0 && e.buttons == 1 && (algo_coloration.ETAT == 0 || algo_coloration.ETAT == 6)) {
+							algo_coloration.initialisation(n);
+						}
+
+					}
+
+					canvas_demo_coloration_graphe.addEventListener('mousemove', souris_detection, false);
+					canvas_demo_coloration_graphe.addEventListener('mousedown', souris_detection, false);
+
+					document.addEventListener('keydown', function(e) {
+						if (e.keyCode == 39 && algo_coloration.ETAT != 0) {
+							algo_coloration.next();
+						}
+					});
+				</script>
+
+
+
+
+
+				<h2>Ce qu'il faut retenir</h2>
+
+				<p>
+					Parcourir un graphe est véritablement un classique. Si vous voulez un exemple un peu plus réaliste de graphe à parcourir, pensez aux moteurs de recherche qui parcourent les sites web en passant de lien en lien. Les sommets sont alors les pages et les arêtes les liens url. La <strong>Pile</strong> et la <strong>File</strong> sont aussi des grands classique de l'informatique, que vous revérez sans doute très rapidement.
+				</p>
+
+				<p>
+					Il n'existe pas une façon unique de parcourir un graphe. Nous avons vu les plus courantes : <strong>profondeur</strong> et <strong>largeur</strong>. Mais on peut aussi donner des <strong>priorités</strong>. Par exemple visiter le sommet le plus proche géographiquement de la sortie.
+				</p>
+
+				<p>
+					Enfin, le plus important, c'est l'importance du choix de la <strong>structure de donnée</strong>. L'algorithme en lui même est extrèmement simple. La majorité de cet article était d'ailleur dédié au choix de la structure pour décrire la labyrinthe, et au choix du type de mémoire.
+				</p>
+
+
+
+				<h2>Pour aller plus loin</h2>
+
+				<p>Ici, on avait toujours notre graphe en mémoire puis on le parcourait. Mais sachez qu'il est aussi possible de le construire en même temps qu'on le parcours. C'est le cas par exemple dans la recherche du meilleur coup pour des jeux comme le morpion,
+					les dames ou les échecs. L'ordinateur n'a pas toutes les configurations possible en mémoire, mais il sait passer d'une configuration à une autre, et calculer les configurations de plateau qui sont voisines. Il peut donc parcourir l'ensemble des possibilités.
+				</p>
+			</article>
+
+		</div>
+	</div>
+
+	<footer class="container-fluid">
+		
+		<div class="row">
+			<div class="col-sm-4">
+				<p>
+					Auteur <br/> Alexandre Fauquette
+				</p>
+			</div>
+
+			<div class="col-sm-4">
+				<p>
+					Contact <br/> algo.pour.tous (at) gmail [dot] com
+				</p>
+			</div>
+
+			<div class="col-sm-4">
+				<p>
+					Hebergement <br/> <a href="http://www.rezomen.fr">Supélec Rezo</a>
+				</p>
+			</div>
+		</div>
+		
+	</footer>
+
+
+</body>
+
+</html>

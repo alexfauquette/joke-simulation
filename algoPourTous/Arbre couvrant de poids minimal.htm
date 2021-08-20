@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta charset="utf-8">
+
+	<title>Arbre couvrant de poids minimal </title>
+	<script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+	  ga('create', 'UA-102891905-1', 'auto');
+	  ga('send', 'pageview');
+
+	</script>
+
+	<link rel="stylesheet" type="text/css" href="CSS/general.css">
+	<link rel="stylesheet" type="text/css" href="CSS/article.css">
+	<link rel="stylesheet" type="text/css" href="CSS/liste_cours.css">
+
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+	<nav class="navbar navbar-default navbar-static-top">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="index.htm">Algo pour tous</a>
+			</div>
+			<div id="navbar" class="navbar-collapse collapse">
+				<ul class="nav navbar-nav">
+					<li>
+						<a href="Recherche.htm">Liste des cours</a>
+					</li>
+					<!--
+					<li>
+						<a href="#">Liste des parcours (en traveaux)</a>
+					</li>
+					<li>
+						<a href="#">Animations (en traveaux)</a>
+					</li>
+					-->
+					<li>
+						<a href="FAQ.htm">FAQ</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+
+
+	<script>
+		/*petit script pour que les reponses soient cachées de base.*/
+		$(function() {
+			$(".cacher").closest("div").children("div").hide();
+			$(".cacher").click(function() {
+				$(this).closest("div").children("div").toggle("slow");
+				$(this).children("span").toggleClass("glyphicon-menu-down");
+				$(this).children("span").toggleClass("glyphicon-menu-up");
+			});
+
+			$("#labyrinthe_solution").hide();
+			$("#labyrinthe").show();
+			$(".labyrinthe").click(function() {
+				$(".labyrinthe").toggle();
+			});
+		});
+	</script>
+
+	<div class="container-fluid">
+		<div class="row">
+			<article class="col-lg-10 col-lg-offset-1">
+				<script type="text/javascript" src="CSS/jquery-3.js"></script>
+				<h1>Arbre Couvrant de Poids Minimal</h1>
+
+				<div class="alert alert-warning" role="alert">Cette page est actuellement en cours de création. Les animations peuvent encore contenir des bugs.</div>
+				
+				<p>
+					Comme pour le parcours de graphe, vous allez avoir le droit à deux algorithmes pour le même problème. Et pour une fois, nous allons pouvoir utiliser alégrement la méthode glouton. Pas besoin de chercher à faire de la programmation dynamique, utiliser
+					une structure de donnée complexe ou autre astuce mathématique.
+				</p>
+
+				<h2>Présentation du problème</h2>
+
+				<p>
+					Classiquement, on présente ce problème comme étant celui d'un fournisseur d'électricité un peu radin. Il a un plan avec toutes les maisons à relier au réseau, et le prix à payer pour relier ces maisons (quand cela est possible). Il va donc chercher à
+					relier toutes les maisons en payant le moins possible.
+				</p>
+
+				<p>
+					Cette présentation rend le problème facile à comprendre. Mais bon, soyons sérieux, ce n'est sans doute pas exactement comme ça qu'est décidé la création du réseau électrique français. Par contre, c'est un problème que l’on peut utiliser pour créer un
+					labyrinthe. Nous reviendrons dessus à la fin.
+				</p>
+
+				<p>
+					Maintenant soyons un peu plus formel (sur le problème). En entrée, nous allons prendre un graphe non-orienté pondéré positivement et connexe (tous les sommets sont reliés entre eux).
+				</p>
+
+				<img alt="exemple connexe" src="images/exemple connexe.svg" />
+
+				<p>
+					La solution devra être un sous-graphe de celui d'entrée, connexe et de poids total minimum. On comprend que le graphe d'entrée doit être connexe. Car si ce n'est pas le cas, aucun sous graphe ne pourra être lui-même connexe et donc il n'y aura pas de
+					solution. Le poids total est simplement la somme des pondérations des arêtes. Du coup, si on avait des arêtes de poids négatif, cela serait assez étrange, car plus on utilise ces arêtes, plus le poids total est petit. Dans ce cas, le problème perd
+					tout son intérêt.
+				</p>
+
+				<img alt="poids sous graphe" src="images/poids sous graphe.svg" />
+
+
+
+				<h2>Un peut d'intuition : pas de boucle</h2>
+
+				<p>
+					La première chose qu'il faut dire même si cela semble évident : la solution ne peut pas contenir de cycle. C'est une propriété assez logique. Car s'il y a un cycle, c'est que tous les sommets du cycle sont reliés par deux chemins différents. Du coup,
+					il suffit de prendre une arête du cycle et de l'enlever. On va du coup casser un des chemins, mais il reste l'autre. Le poids total est donc plus petit, car on a supprimé une arête, et les sommets sont toujours reliés entre eux. Pour être précis,
+					on supprimera l'arête qui a la plus grosse pondération, car c'est elle qui diminuera le plus le poids total du sous-graphe.
+				</p>
+
+				<img alt="cylces" src="images/cycles.svg" />
+
+				<p>
+					Et voilà, on a déjà une propriété générale que l'on pourra utiliser pour les deux algorithmes "On ne fait pas de cycles". Il faudra donc dans les deux algorithmes trouver un moyen d'éviter à tout prix ces cycles.
+				</p>
+
+
+				<h2>Quand s'arrêter ?</h2>
+
+				<p>
+					La question peut paraitre un peu idiote, et on serrait tenter de répondre, que l’on s’arrête quand on à la solution. C’est-à-dire, quand tous les sommets sont reliés. Mais si on réfléchit un peu, on veut avoir l’arbre de poids minimal. Donc ce serait
+					bien si l’on pouvait connaitre combien d’arêtes nous devons utiliser. Prenons un cas simple, un graphe à 2 sommets. Une seule solution possible, il faut mettre une arrête. Si on a 3 sommets, il faudra 2 arêtes pour les relier. Avec 4 sommets, 3 arêtes
+					suffisent. De plus, si on utilise plus d’arêtes, on va créer un cycle. On a envie de généraliser en disant que pour un graphe de N sommets, il faut N-1 arêtes pour le couvrir.
+				</p>
+
+
+				<div>
+					<!-- cette div sert à separer la démonstration du reste -->
+					<h3 class="cacher"><span class="glyphicon glyphicon-menu-down" aria-hidden="false"></span> Démonstration</h3>
+					<div>
+						<p>
+							Partons du principe que vous avez réussi à créer un sous graphe connexe sans cycle (ce que l’on appelle aussi un arbre). Comme tous les sommets sont reliés, on va en prendre un quelconque que l’on appellera D (comme Départ). On sait qu’il existe un unique
+							chemin entre D et chacun des N-1 sommets restants. On sait que le chemin est unique, car s’il y en avait deux, il y aurait un cycle, car on pourrait aller de D jusqu’au sommet puis aller du sommet vers D.
+						</p>
+
+						<p>
+							Comme pour chaque sommet, il n’y a qu’un chemin le reliant à D, on peut associer à chaque sommet un numéro, qui est le nombre d’arêtes le séparant de D. Du coup tous les sommets de numéro 1 sont directement reliés à D, ceux de numéro 2 sont reliés à un
+							sommet de numéro 1, ceux de numéro 3 sont relié à un sommet de numéro 2, et ainsi de suite. On pourra dire que les sommets de numéro 1 forment la couche 1, que ceux de numéro 2 forme la couche 2, etc. Pour que ce soit plus claire, voici un petit
+							schéma.
+						</p>
+
+						<img alt="illustration des couches 1" src="images/couches1.svg" />
+
+						<p>
+							Attention, chaque sommet est relié à un seul sommet de numéro inférieur. Car on a dit précédemment qu’il n’y a qu’un seul chemin entre un nœud et D. Pour la même raison d’unicité du chemin, il n’y a pas d’arête entre deux sommets d’une même couche, ni
+							entre deux sommets situés dans des couches qui ne sont pas voisine.
+						</p>
+
+						<p>
+							Ce que l’on peut en déduire, c’est qu’il y a exactement autant d’arêtes entre D et la coche 1 que de sommets dans la couche 1. Il y a exactement autant d’arêtes entre la couche 1 et la couche 2 que de sommets dans la couche 2. D’une manière plus générale,
+							on a autant d’arêtes entre la couche n est la couche n-1 que de sommets dans la couche n. Comme il n’y a pas d’arête entre les sommets d’une même couche, ni entre des couches non voisines, on peut compter les nombre d’arêtes en comptant les nombre
+							de sommets dans chaque couche. Du coup, il y a autant d’arêtes que de sommets dans toutes les couches réunies. C’est à dire N-1 arêtes, car on a N sommets moins le sommet D. Conclusion, si vous avez un arbre de N sommets, vous avez N-1 arêtes.
+						</p>
+					</div>
+				</div>
+
+
+				<h2>Algorithme de Kruskal</h2>
+
+				<p>
+					Si l’on résume ce que l’on a montré jusqu’à présent, c’est que si on nous donne un graphe connexe de N sommets, il faudra prendre N-1 arêtes qui ne font pas de cycle. L’idée la plus simple est de trier toutes les arêtes par ordre croissant. Puis on va
+					prendre l’arête la plus petite, vérifier que si on l’ajoute on ne fera pas un cycle, et recommencer jusqu’à avoir N-1 arêtes. Vous trouvez ça trop simple. En effet c’est simple, mais ça fonctionne. Car si on y réfléchi, on obtiendra bien un arbre
+					couvrant. En effet, les seules arêtes que l’on s’interdit sont celles qui forment un cycle, donc toutes celles nécessaire à la formation de l’arbre ne sont pas concernées. Et si on regarde tous les cycles possibles sur le graphe de départ, ce sont
+					toujours les plus grosses arêtes qui ne sont pas mise, car la plus grosse arête d’un cycle est la dernière testée, c’est donc elle que l’on ne met pas vue qu’elle termine le cycle.
+				</p>
+
+				<p>
+					Par contre, il y a un problème que j’ai passé sous silence, le "on vérifie que l’arête ne forme pas de cycle". C’est simple à faire pour un humain, mais il faut que l’ordinateur soit capable de la faire. Une technique assez simple utilisée dans cet exemple,
+					et d’associer un numéro à chaque ensemble de sommets reliés entre eux. Au début, tous les sommets sont séparés. Du coup ils ont tous des numéros différents. A chaque fois que l’on ajoute une arrête, on récupère le numéro associé aux deux sommets
+					de cette arête. Si c’est le même numéro, c’est que les sommets sont déjà reliés. L’arête ferme donc un cycle, il ne faut pas la prendre. Par contre si les numéros sont différents, on ajoute l’arête, et on remplace tous les sommets concernés par le
+					plus petit des deux numéros. Par exemple si on veut relier un sommet associé au numéro 2 avec un sommet associé à 4, on ajoute l’arête, et on va associer le numéro 2 à tous les sommets qui étaient associés au numéro 4.
+				</p>
+
+				<img alt="illustration de l'ajout d'une arete" src="images/ajout-d-aretes.svg" />
+
+				<ol>
+					<li>Etat innitial, tous les sommets sont séparés, et ont un numéro différent</li>
+					<li>Apres l'ajout de deux arêtes, on a 3 groupes de sommets : les groupes 1,2,4</li>
+					<li>Apres l'ajout d'une troisième arête, les groupes 2 et 4 ont fusionés</li>
+				</ol>
+
+				<p>
+					Fini le blabla, passe à l'animation. En utilisant les fléches du claviers, vous pouvez faire avancer étape par étape cet algorithme. Vous pouvez voire évoluer l'état du graphe, et en dessous, vous trouvez la liste des arêtes triées par ordre croissant,
+					ainsi que le tableau faisant les lien entre les sommets et le numéro qui leur est associé.
+				</p>
+
+
+				<div class="animation">
+					<style type="text/css">
+						#can_graphe {
+							width: 49%;
+						}
+
+						#can_algo {
+							width: 50%;
+						}
+
+						#can_liste_aretes {
+							width: 100%;
+						}
+
+						#can_liste_groupes {
+							width: 100%;
+						}
+					</style>
+
+					<canvas id="can_graphe" width="600px" height="400px" style="background-color:white;">[Votre navigateur ne supporte pas les canvas]</canvas>
+					<canvas id="can_algo" width="600px" height="400px" style="background-color:white;">[Votre navigateur ne supporte pas les canvas]</canvas>
+					<canvas id="can_liste_aretes" width="1200px" height="110px" style="background-color:white;">[Votre navigateur ne supporte pas les canvas]</canvas>
+
+					<canvas id="can_liste_groupes" width="1200px" height="80px" style="background-color:white;">[Votre navigateur ne supporte pas les canvas]</canvas>
+
+				</div>
+
+
+				<h2>Algorithme de Prim</h2>
+
+				<p>
+					Cette fois, on ne va pas trier immédiatement toutes les arêtes du graphe. On va partir d’un sommet et créer l’arbre en ajoutant progressivement les sommets restants. Concrètement, il va falloir créer et maintenir à jour une liste des arêtes reliant l’arbre
+					en construction et les autres sommets. Pour ajouter un sommet et garder les propriétés de notre liste d’arêtes, on y va en 3 étapes.
+				</p>
+
+				<ol>
+					<li>On récupère de la liste l’arête qui a le poids le plus faible. C’est l’étape où l’on ajoute un sommet.</li>
+					<li>On ajoute à la liste les arêtes qui relient le nouveau sommet avec des sommets qui ne sont pas encore dans l’arbre.</li>
+					<li>On supprime de la liste les arêtes qui relient le nouveau sommet à d’autres sommets de l’arbre en construction (ce qui empêche de créer un cycle)</li>
+				</ol>
+
+				<img alt="illustration de l'algorithme de Prim" src="images/illustration_Prim.svg" />
+				<h2>On est sûr que ça fonctionne ?</h2>
+
+				<p>
+					J’avais un peu balayé cette question pour l’algorithme de Kruskal avec un argument du type comme on a pris les plus petits poids possibles, le poids total est minimal. De plus c’est un algorithme qui traite le graphe dans son ensemble. Par contre, Prim
+					à une vision très réduite, et il est légitime de se demander si le poids de l’arbre obtenu ne change pas en fonction de sommet de départ, ou si en prenant toujours l’arête de poids minimal, on ne passe pas à côté d’une meilleure solution.
+				</p>
+
+				<p>
+					Pour se convaincre que notre arbre est de poids minimal, on va supposer que l’on en a un que l’on appel S (comme Solution). Maintenant, lançons l’algorithmes. Si toutes les arêtes qu’il ajoute sont dans S, on obtient ce que l’on cherchait, pas de soucis.
+					Par contre imaginons qu’à un moment, notre algorithme prenne une arête qui n’est pas dans S (rassurez-vous, ce n’est pas la fin du monde). On va appeler a cette arête, et on appellera V les sommets qui ont déjà été reliés avant l’ajout de a. Vue
+					le fonctionnement de notre algorithme, on sait que l’arête a relie un sommet appartenant à V avec un sommet qui n’est pas dans V. Comme S est un arbre couvrant, il existe un chemin dans S reliant ces deux sommets, et ce chemin doit forcément passer
+					par une arête qui relie un sommet de V avec un sommet qui n’est pas dans V. On va appeler cette arête s. Comme s relie un sommet de V avec un sommet extérieur à V on sait qu’elle était dans la liste de notre algorithme. Et comme elle n’a pas été
+					choisie, on peut en déduire que Poids(s) >= Poids(a).
+				</p>
+
+				<img alt="illustration des notations" src="images/demo_sousgraphe.svg" />
+
+				<p>
+					Maintenant, on va imaginer que l’on prend l’arbre S, qu’on lui enlève son arête s et qu’on lui ajoute son arête a. On a toujours un arbre couvrant. Et comme Poids(s) >= Poids(a) le poids de l’arbre couvrant est inférieur ou égale à celui de S. On obtient
+					donc un arbre de poids minimal que l’on peut appeler S’. Et magie, pour l’instant les arêtes que l’on a ajoutées sont toutes dans le graphe. On peut donc continuer, et si l’algorithme donne à nouveau une arête qui n’est pas dans S’ on recommence
+					le raisonnement qui va nous donner un arbre S’’ lui aussi solution du problème. Et ainsi de suite jusqu’à la fin de l’algorithme, qui du coup nous donne bien ce que l’on voulait, un arbre couvrant de poids minimal.
+				</p>
+
+				<p>
+					On sait que l'algorithme fonctionne,et maintenant on va le voire en action. Comme pour l'animation précédente, vous pouvez voire le graphe évoluer, la liste des arêtes qui relient notre arbre en construction avec les sommets restants. Et un tableau qui
+					permet de savoir si un sommet est dans l'arbre ou pas. Ce qui est très pratique pour vérifier que les arêes ne forment pas de cycle.
+				</p>
+
+				<div class="animation">
+					<style type="text/css">
+						#can_graphe2 {
+							width: 49%;
+						}
+
+						#can_algo2 {
+							width: 50%;
+						}
+
+						#can_liste_aretes2 {
+							width: 100%;
+						}
+
+						#can_liste_groupes2 {
+							width: 100%;
+						}
+					</style>
+
+					<canvas id="can_graphe2" width="600px" height="400px" style="background-color:white;">[Votre navigateur ne supporte pas les canvas]</canvas>
+					<canvas id="can_algo2" width="600px" height="400px" style="background-color:white;">[Votre navigateur ne supporte pas les canvas]</canvas>
+					<canvas id="can_liste_aretes2" width="1200px" height="110px" style="background-color:white;">[Votre navigateur ne supporte pas les canvas]</canvas>
+
+					<canvas id="can_liste_groupes2" width="1200px" height="80px" style="background-color:white;">[Votre navigateur ne supporte pas les canvas]</canvas>
+
+				</div>
+
+
+				<h2>Construire un labyrinthe</h2>
+				<p>
+					Comme promis, nous allons voire une utilisation de ce problème, la création de labyrinthes. Ce n’est bien sûr pas la seule, mais elle est à la fois simple, amusante et visuelle. Qu’est-ce qu’un bon labyrinthe ? Tout d’abord, il faut que l’on puisse relier
+					la sortie et l’entrée, sinon ce n’est pas juste. Et il faut que ce chemin soit difficile à trouver. Du coup il va falloir que le chemin soit tordu, et qu’il y ait des culs de sacs. Plein de culs de sac partout ! l’idée est donc de voire notre arbre
+					couvrant comme un labyrinthe. On choisit un sommet pour l’entrée et un pour la sortie (de préférence très loin l’un de l’autre). D’après les propriétés de notre arbre, il existe un unique chemin entre l’entrée et la sortie (s’il y en avait plusieurs
+					à serait trop simple). Et cerise sur le gâteau, tous les sommets sont reliés entre eux, du coup tous les sommets qui ne sont pas utilisés par le chemin entrée/sortie sont utilisés pour faire des culs de sac. Pas mal non ?
+				</p>
+				<p>
+					Mais comment on crée notre arbre ? L’idée est de faire un labyrinthe rectangulaire. On va donc partir d’une grille, dans laquelle on va creuser les couloirs pour obtenir notre labyrinthe. Voici quelques exemples à partir d’une grille 10x5.
+				</p>
+				<img alt="grille de départ et exemple de labyrinthe obtenus" src='images/laby1.svg' />
+				<p>
+					Pour la partie arbre couvrant ok, mais pour l’instant on ne voit pas bien à quoi sert le poids minimal, car après tout c’est ça le plus compliqué dans les algorithmes que l’on a vus. En fait, quand on part d’une grille, c’est comme si on partait d’un
+					graphe qui ressemble à un quadrillage ou tous sommets sont reliés avec le sommet de dessus, de droite de gauche et d’en dessous. Par contre, rien ne nous indique quel poids donner à ces arêtes. Du coup, on va prendre des nombres au hasard pour ces
+					arêtes.
+				</p>
+				<img alt="illustration des étapes de création du labyrinthe" src="images/laby2.svg" />
+				<p>
+					Comme le poids des arêtes est aléatoires, notre arbre couvrant de poids minimal sera lui aussi aléatoire. Conclusion, on obtient un arbre aléatoire. Il ne vous reste plus qu’à choisir où mettre l’entrée et où mettre la sortie et votre labyrinthe est prêt.
+					On peut même imaginer proposer au créateur de labyrinthe de choisir le chemin entre l’entrée et la sortie en mettant des poids nul sur les arêtes du chemin choisi. Pour vous montrer ce que cela peut donner, vous en avez déjà vue 4 petits. Mais pour
+					être sûr que je ne les fais pas à la main, en voici un géant. Le but est de partir du coin en haut à gauche pour arriver au coin en bas à droite. La solution est bien sur disponible. Pour information,je ne l'ai pas cherchée à la main, j'ai utilisé
+					l'algorithme de parcourt de graphe que vous pouvez retrouver <a href='Parcourt_de_graphe.htm'>ici</a>.
+				</p>
+				<img alt="labyrinthe géant" src='images/laby_geant.png' class="labyrinthe" id="labyrinthe" />
+				<img alt="solution du labyrinthe géant" src='images/laby_geant_solution.png' class="labyrinthe" id="labyrinthe_solution" />
+
+
+
+				<p>Si vous trouvez qu'un labyrinthe en noir et blanc comme celui si c'est esthétique, allez sur <a href="creer labyrinthe.htm">cette page</a>. Vous pourez voire la création du labyrinthe en action.</p>
+				<!-- 	Telechargement des objets	 -->
+				<script src="JS/Objet_noeud.js"></script>
+				<script src="JS/Objet_arete.js"></script>
+				<script src="JS/Objet_graphe_simplifie.js"></script>
+				<script src="JS/Algorithme_MST_Kruskal.js"></script>
+				<script src="JS/Algorithme_MST_Prim.js"></script>
+			</article>
+		</div>
+	</div>
+
+
+	<footer class="container-fluid">
+		
+		<div class="row">
+			<div class="col-sm-4">
+				<p>
+					Auteur <br/> Alexandre Fauquette
+				</p>
+			</div>
+
+			<div class="col-sm-4">
+				<p>
+					Contact <br/> algo.pour.tous (at) gmail [dot] com
+				</p>
+			</div>
+
+			<div class="col-sm-4">
+				<p>
+					Hebergement <br/> <a href="http://www.rezomen.fr">Supélec Rezo</a>
+				</p>
+			</div>
+		</div>
+		
+	</footer>
+
+
+</body>
+
+</html>

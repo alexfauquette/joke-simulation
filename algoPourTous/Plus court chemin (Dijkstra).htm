@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+	  ga('create', 'UA-102891905-1', 'auto');
+	  ga('send', 'pageview');
+
+	</script>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta charset="utf-8">
+
+	<title>Plus court chemin (Dijkstra)</title>
+
+	<link rel="stylesheet" type="text/css" href="CSS/general.css">
+	<link rel="stylesheet" type="text/css" href="CSS/article.css">
+	<link rel="stylesheet" type="text/css" href="CSS/liste_cours.css">
+
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+	<nav class="navbar navbar-default navbar-static-top">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="index.htm">Algo pour tous</a>
+			</div>
+			<div id="navbar" class="navbar-collapse collapse">
+				<ul class="nav navbar-nav">
+					<li>
+						<a href="Recherche.htm">Liste des cours</a>
+					</li>
+					<!--
+					<li>
+						<a href="#">Liste des parcours (en traveaux)</a>
+					</li>
+					<li>
+						<a href="#">Animations (en traveaux)</a>
+					</li>
+					-->
+					<li>
+						<a href="FAQ.htm">FAQ</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+
+
+	<div class="container-fluid">
+		<div class="row">
+			<article class="col-lg-10 col-lg-offset-1">
+				<script type="text/javascript" src="JS/jquery-3.js"></script>
+				<h1>Recherche du plus court chemin<br>Algorithme de Dijkstra</h1>
+
+				<p>Dans un épisode précédent (<a href="Parcourt_de_graphe.htm">celui-ci</a> pour être précis) nous avons vu comment trouver un chemin entre deux points. En soit c'est utile, mais ce qui serait encore mieux, c'est de trouver le plus court. Car si votre
+					GPS vous propose de passer par Madrid quand vous voulez faire le trajet Lille -Paris, je ne doute pas qu'il ait trouvé un chemin, mais je ne pense pas que ce soit le plus court. Après il s'agit d'un chemin dans un graphe. Donc les sommets peuvent
+					être autre chose que des carrefours, et les arêtes autres choses que des routes. J'ai déjà trop parlé, on va maintenant entrer dans le vif du sujet.</p>
+
+
+				<h2>Bien poser son problème, c'est le début du bonheur</h2>
+
+				<p>Je pense que le titre est suffisamment explicite. On va commencer par poser le problème. Pour un problème du plus court chemin, prenez un graphe pondéré, ainsi qu'un nœud d'entrée et un nœud de sortie, et c'est tout (oui, c'est une recette pour pas
+					cher).
+					<br> Le graphe va par exemple représenter l'ensemble des possibilités. Il permet à l'ordinateur de savoir si on peut aller directement d'un endroit à un autre, et comme il est pondéré, on sait aussi le coût de ce trajet (la distance, le temps, le
+					prix, ...). Puis comme pour un GPS pour trouver un chemin, il faut bien savoir d'où vous partez et où vous voulez arriver. Avec tout ça, votre problème est correctement posé. Il ne reste plus qu'à trouver comment le résoudre.</p>
+
+				<p>En fait, on a été un peu vite, je dirais même un peu trop vite. On a oublié de préciser ce qu'est le "coût" d'un chemin. Il est difficile pour un ordinateur de trouver quel est le chemin le plus court si on ne lui dit pas comment calculer la distance
+					d'un chemin. Ici, il s'agit d'un calcul simple. On va additionner le poid de toutes les arêtes utilisées.
+					<br> Par exemple sur le graphe suivant, le chemin en vert à une distance de 10, le rouge de 12 et le bleu de 13. Et ce sont tous de chemin allant de A vers E.
+				</p>
+
+				<img alt="illustration du calcul du coup de 3 chemins différent sur un graphe d'exemple" src="images/cout_chemin_illustre.svg">
+
+				<p>
+					Cela est sans doute naturel pour vous. En effet, si Lille-Paris fait 200km et 400km entre Paris et Lyon, Alors le trajet Lille-Lyon en passant par Paris fera 600km. Pas besoin de longues réflexions pour savoir cela. Mais on peut aussi imagine des coûts
+					qui soient des multiplications, ou d'autres opérations plus ou moins étranges.
+				</p>
+
+				<p>Maintenant que les données sont données (ho ! Ça rime!) il ne reste plus qu'à définir le problème. On dira que c est une solution si n₀ = d et n_m = a. Traduction : si le chemin c part du nœud de départ et arrive aux nœud d'arrivé. Ça c'est ce qu'on
+					a vu précédemment.
+				</p>
+
+				<p>On dira aussi que le chemin c est optimal s'il est le plus court. C'est-à-dire que pour toute solution c' du problème (n'importe quel chemin allant du départ à l'arrivée) coût(c) ≤ coût(c'). Autrement dit, si on prend n'importe quel chemin partant
+					du nœud D (départ) et arrivant sur le nœud A (arrivée), son coût ne peut pas être meilleur que celui du chemin c. Donc on ne peux pas aller de D vers A plus vite en utilisant un autre chemin. Au mieux, on peut aller aussi vite.
+				</p>
+
+				<h2>Et si on essayait la méthode barbare</h2>
+
+				<p>Comme le but de notre algorithme est de trouver le chemin de coût minimum, on pourrait imaginer utiliser un algorithme de parcours de graphe qui essayerait tous les chemins possibles, et nous donnerait à la fin celui qu'il a trouvé comme étant le
+					plus petit. En soit, ce n'est pas une si mauvaise idée. Un mathématicien vous dira même que c'est faisable tant que vous interdisez à votre programme de tourner en rond. Mais un informaticien lui vous demandera combien de temps cela prendrait. Car
+					pour un petit graphe de rien du tout c'est envisageable. Mais pour une ville, ça commence déjà à devenir beaucoup plus dur.
+				</p>
+
+				<p>
+					Déjà même si vous faite un algorithme idiot, il faudra l'empêcher de passer deux fois par le même sommet. Car le chemin A-B-C-B-C-B-C-D est bien différent du chemin A-B-C-D et relie les mêmes sommets. Mais il y a fort à parier que faire des allers-retours
+					entre B et C ne vous aide pas à trouver le meilleur chemin. Vous aller donc chercher tout les chemins sans boucle de votre graphe.
+				</p>
+				<p>C'est pour cela que des chercheurs se sont penchés sur le problème. Et ils ont trouvé des algorithmes beaucoup plus performants pour résoudre ce problème de chemin minimum.
+				</p>
+
+				<h2>L'algorithme de Dijkstra</h2>
+
+				<p>Pour proposer un algorithme assez rapide, Dijkstra a fait une hypothèse : tous les poids du graphe sont positifs. Pour trouver un chemin sur une carte, ce n'est pas un problème, car on a pas encore vu de route mesurant -500m. Mais pour des applications
+					plus abstraites des graphes, il est possible de croiser des arêtes avec des poids négatifs. Vous verrez aussi que cet algorithme fait plus que ce qu'il promet, car il donne le chemin minimal reliant n'importe quel sommet de graphe au sommet initial.
+				</p>
+
+				<h3>Présentation de l'algorithme</h3>
+
+				<p>Pour cet algorithme, Dijkstra utilise plusieurs choses. D'abord le graphe lui même. Puis à chaque sommet on va associer deux valeurs&nbsp;: la distance et le nœud parent (vous comprendrez dans deux paragraphes). On peut les implémenter soit directement
+					dans le graphe, soit dans un tableau. Et enfin, on va utiliser une liste pour mémoriser quelque sommets que l'on va appeler Frontière.
+				</p>
+
+				<p>Au commencement (de l'algo) on associe la valeur infini comme distance à tout les sommets, sauf le sommet de départ à qui on associe la distance 0. On laisse la valeur des nœuds parents vide. Enfin, on va mettre dans Frontière le nœud de départ. Voila,
+					votre algorithme est prêt à être lancer. Et voici ce qu'on va lui demander&nbsp;:
+				</p>
+				<div class="algo">
+					<ol>
+						<li>Tant que la frontière n'est pas vide&nbsp;:</li>
+						<ol>
+							<li>on prend le sommet (qu'on appellera n) dont la distance est la plus petite</li>
+							<li>pour chaque voisin v de n</li>
+							<li>si distance(v) ≥ distance(n)+d( (n,v) ) alors&nbsp;:</li>
+							<ol>
+								<li>distance(v) = distance(n)+d( (n,v) )</li>
+								<li>parent(v) = n</li>
+							</ol>
+							<li>recommencer</li>
+						</ol>
+					</ol>
+				</div>
+
+				<p>Alors, maintenant vous voyez à quoi sert distance et parents ? Non ? Alors, distance(n) est la distance du plus petit chemin qu'on a trouvé pour l'instant entre le départ et le sommet n. Et parent(n) et le sommet placé juste avant n dans ce chemin
+					minimum. Ça doit pas être très clair dit comme ça, donc voici un exemple. Si parent(A) = B alors le chemin le plus court que l'on connaisse, allant jusque A finira pas les sommets B puis A. Si parent(B) = D alors le chemin le plus court que l'on
+					connaisse, allant jusque A finira pas les sommets D puis B puis A.
+				</p>
+
+				<p>Vous avez sans doute remarqué, il n'est pas marqué à la fin de l'algorithme : « regardez, voici le meilleur chemin » En fait, c'est beaucoup plus puissant que ça. Vous avez tous les chemins minimaux partant du sommet de départ. Pour chaque sommet
+					n, vous avez distance(n) qui vous donne la distance minimale le séparant du sommet de départ. Et le sommet juste avant n, c'est parent(n). Et celui encore avant ? Ben c'est parent(parent(n)). Et avant, c'est parent(parent(parent(n))), etc etc jusqu’à
+					ce que vous arriviez au sommet du départ qui lui n'a pas de parents.
+				</p>
+
+				<p>Bon, j'ai beaucoup écrit, je vous laisse observer l'algorithme en action. Vous pouvez voir le graphe, le tableau avec les distances et les parents, ainsi que la frontière. A la fin, les arêtes utilisées pour les chemins seront mises en rouge. Les
+					sommets passent en vert quand ils sont traités (vous verrez qu'on ne passe qu'une et une seule fois par chaque sommet), et ceux de la frontière seront en orange (Vous pourrez remarquez que les sommets appartenant à frontière forment une ... frontière
+					entre les sommets déjà visités et le reste du graphe (c'est fou comme ce nom est bien choisi)
+				</p>
+
+
+				<div class="animation">
+					<style type="text/css">
+						#representation {
+							width: 50%;
+							height: 100%;
+						}
+
+						#representation #can_graphe {
+							width: 60%;
+						}
+
+						#representation #can_tableau {
+							width: 36%;
+						}
+
+						#representation #can_liste {
+							width: 60%;
+						}
+
+						#explication {
+							height: 100%;
+							width: 46%;
+						}
+
+						#explication canvas {
+							height: 100%;
+							width: 100%;
+						}
+					</style>
+
+
+
+					<div id="representation">
+
+						<canvas id="can_graphe" width="500px" height="400px" style="background-color:white;">[Votre navigateur ne supporte pas les canvas]</canvas>
+						<canvas id="can_tableau" width="300px" height="400px" style="background-color:white;">[Votre navigateur ne supporte pas les canvas]</canvas>
+						<canvas id="can_liste" width="500px" height="40px" style="background-color:white;">[Votre navigateur ne supporte pas les canvas]</canvas>
+
+					</div>
+
+					<div id="explication">
+
+						<canvas id="can_algo" width="800px" height="450px" style="background-color:white;">[Votre navigateur ne supporte pas les canvas]</canvas>
+
+					</div>
+
+					<!-- 	Telechargement des objets	 -->
+					<script src="JS/Objet_noeud.js"></script>
+					<script src="JS/Objet_arete.js"></script>
+					<script src="JS/Objet_liste.js"></script>
+					<script src="JS/Objet_graphe_simplifie.js"></script>
+					<script src="JS/Objet_tableau_dijkstra.js"></script>
+
+					<script src="JS/Algorithme_Dijkstra.js"></script>
+				</div>
+
+
+				<h3>Démonstration de l'algorithme</h3>
+
+				<p>plus tard sur une autre page</p>
+			</article>
+		</div>
+	</div>
+
+	<footer class="container-fluid">
+		
+		<div class="row">
+			<div class="col-sm-4">
+				<p>
+					Auteur <br/> Alexandre Fauquette
+				</p>
+			</div>
+
+			<div class="col-sm-4">
+				<p>
+					Contact <br/> algo.pour.tous (at) gmail [dot] com
+				</p>
+			</div>
+
+			<div class="col-sm-4">
+				<p>
+					Hebergement <br/> <a href="http://www.rezomen.fr">Supélec Rezo</a>
+				</p>
+			</div>
+		</div>
+		
+	</footer>
+
+
+</body>
+
+</html>

@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+	<script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+	  ga('create', 'UA-102891905-1', 'auto');
+	  ga('send', 'pageview');
+
+	</script>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta charset="utf-8">
+
+	<title>Programmation dynamique</title>
+
+	<link rel="stylesheet" type="text/css" href="CSS/general.css">
+	<link rel="stylesheet" type="text/css" href="CSS/article.css">
+	<link rel="stylesheet" type="text/css" href="CSS/liste_cours.css">
+
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+	<nav class="navbar navbar-default navbar-static-top">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="index.htm">Algo pour tous</a>
+			</div>
+			<div id="navbar" class="navbar-collapse collapse">
+				<ul class="nav navbar-nav">
+					<li>
+						<a href="Recherche.htm">Liste des cours</a>
+					</li>
+					<!--
+					<li>
+						<a href="#">Liste des parcours (en traveaux)</a>
+					</li>
+					<li>
+						<a href="#">Animations (en traveaux)</a>
+					</li>
+					-->
+					<li>
+						<a href="FAQ.htm">FAQ</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+
+
+
+	<div class="container-fluid">
+		<div class="row">
+			<article class="col-lg-10 col-lg-offset-1">
+				<script type="text/javascript" src="JS/jquery-3.js"></script>
+				<script type="text/javascript" src="JS/Objet_tableau_ADN.js"></script>
+				<script type="text/javascript" src="JS/Algorithme_ADN.js"></script>
+
+
+				<h1>Programation dynamique<br>Exemple : aligment génétique</h1>
+
+
+
+				<p>Nous allons voir ici un exemple extrêmement classique de <strong>programmation dynamique</strong> : l'algorithme de Needleman-Wunsch. Il a l'avantage de partir d'un problème qui semble complexe avec de nombreux cas à calculer pour se ramener à la
+					simple écriture d'un tableau à deux dimensions.</p>
+
+				<h2>Mise en contexte (Un peu de SVT)</h2>
+
+				<p>Pour une fois, nous n'allons pas commencer directement par de l'informatique, mais par un peu de SVT, et plus précisément de la génétique. Vous savez sans doute que votre corps est composé de cellules. Mais savez vous comment ces cellules savent ce
+					qu'elles doivent faire&nbsp;? Pourquoi produisent-elles des cheveux bruns chez certaines personnes, alors que chez d'autres ce sont des cheveux blonds&nbsp;? Cette <strong>information</strong> est cachée au milieu de vos cellules, dans le noyau.
+					Mais cette information n'est pas écrite en français, ni même en allemand. Il s'agit de plusieurs molécules extrêmement longues sur lesquelles 4 motifs se répètent et que l'on appelle <strong>ADN</strong>. On pourrait toujours s'amuser à dessiner
+					chaque atome de cette molécule. Mais comme on l'a dit, on peut la simplifier par une sucession de 4 motifs différents. On a plus qu'à dérouler un des deux bruns d'ADN, ce qui nous donne une chaîne composée de nos 4 motifs. Et comme des dessins ce
+					n'est pas très pratique, on va représenter ces motifs par des lettres. On obtient donc une langue composée uniquement de <strong>4 symboles</strong> que l'on notera <strong>A</strong>, <strong>C</strong>, <strong>G</strong>, <strong>T</strong>, et
+					qui sont appelés <strong>nucléotïdes</strong>. Voici un petit dessin pour résumer la simplification de notre représentation de l'ADN, en partant de la représentation moléculaire vers la représentation sous forme de lettres.</p>
+
+
+				<img src="images/simplification_ADN.png" width="100%">
+
+
+				<p>Il reste alors à trouver l'utilité de chaque code. Pour cela, on suppose que des codes qui se ressemblent ont la même utilité. Du coup, il faut savoir si deux codes se ressemblent. Et c'est là qu'intervient l'algorithme que nous allons voir. Le problème
+					c'est que si deux codes paraissent différents à première vue, peut être qu'en ajoutant des espaces, on se rendra compte que ces codes ne sont pas si différents, voire quasiment identiques. Le but pour l'informaticien, est donc de proposer un algorithme
+					qui prend deux séquences d'ADN est qui essaie de les aligner au mieux. Comme vous le voyez si dessous, ajouter deux espaces parmet d'améliorer l'alignement des deux séquences.</p>
+
+				<img src="images/alignement.png" width="100%">
+
+				<h2>Formalisation</h2>
+
+				<p>Comme dit précédemment, il va falloir aligner deux <strong>séquences</strong> d'ADN (deux mots composés des lettres A, C, G et T). Pour cela, il faut donner à l'algorithme les deux séquences à aligner. Mais il faut aussi lui donner un moyen de comparer
+					différents alignements. Pour cela, nous allons définir une fonction qui va donner un <strong>score</strong> aux alignements de sorte qu'un <strong>bon alignement</strong> ait un <strong>score élevé</strong>, et un <strong>mauvais alignement</strong>,
+					un <strong>score bas</strong>.</p>
+
+				<p>Dans un alignement, on peut rencontrer 3 configurations&nbsp;:
+				</p>
+				<ul>
+					<li>Les lettres sont <strong>identiques</strong> : on dit alors qu'elles <strong>matchent</strong>. C'est ce que l'on veut voir le plus souvent. On va donc dire qu'à chaque fois que 2 lettres sont identiques cela vaut <strong>+1</strong>. </li>
+					<li>Les lettres sont <strong>différentes</strong> : par exemple un A est remplacé par un T dans l'autre séquence. On appelle cela une <strong>substitution</strong>, et ce n'est pas ce que l'on cherche. On va donc dire que ça vaut <strong>-1</strong></li>
+					<li>Il n'y a <strong>rien en face</strong> de la lettre. Pour mieux aligner d'autres parties on a décidé de laisser un espace à cet endroit. On appelle cela une <strong>délétion</strong>, ça peut arriver mais c'est plus rare qu'une substitution. On lui
+						donnera donc un score de <strong>-2</strong> pour montrer que l'on préfère avoir une substitution.</li>
+				</ul>
+				<p></p>
+				<p>Le score est alors l'addition de toutes ces valeurs. Voici un exemple de calcul du score d'un alignement. Il suffit de compter le nombre de <strong>matchs</strong>, de <strong>délétions</strong> et de <strong>substitutions</strong> et d'y appliquer
+					le <strong>score</strong> associé.
+					<br> le score est donc : 1 + (-1) + 1 + (-2) + 1 + (-1) + (-1) + 1 = -1</p>
+
+				<img src="images/calcul%2520score.png" width="100%">
+
+
+				<p>Vous pouvez bien sûr choisir d'autres valeurs. En biologie, il existe des tableaux basés sur des études statistiques pour savoir s'il est plus fréquent qu'un A se transforme en C ou qu'un T se transforme en G pour avoir des scores plus adaptés à la
+					réalité des mutations. Le calcul du score est plus précis, mais l'algorithme reste le même, et c'est tout ce qui nous intéresse ici.</p>
+
+
+
+				<h2>Impossible d'y aller naïvement</h2>
+
+				<p>Bon, concrètement tout ce qu'on a à faire, c'est placer des trous aux bons endroits. En effet, on ne peut pas changer l'ordre des lettres, on peut juste se dire «&nbsp;Tiens je vais mettre une délétion ici pour obtenir de meilleurs alignements après&nbsp;».
+					Du coup ça ne devrait pas être trop dur de trouver une solution. Bon ok, avec 10 lettres, on peut s'en sortir à la main. Mais pour être sûr d'avoir le meilleur score, il faudrait tester toutes les possibilités. Et là, c'est beaucoup plus dur. Pour
+					1 délétion, on a 20 configurations différentes. Pour 2 délétions, on a 180 possibilités. Pour 3 délétions, on passe à 1140 possibilités. Vous trouvez que ça monte vite&nbsp;? Attendez, là ce n'est que pour des ADNs de 10 lettres. Normalement, les
+					gènes contiennent des centaines de lettres, du coup pour 2 délétions, ca fait 19.900 possibilités. Pour 3 délétions&nbsp;? On a 1.313.400 possibilités.
+					<br> Vous l'aurez compris, écrire toutes les possibilités, calculer leur score et retenir celles qui ont le score minimal n'est pas vraiment la bonne solution.</p>
+
+				<h2>Une relation de récurrence insuffisante</h2>
+
+				<p>Bon, tout tester c'était un peu barbare comme méthode. On va donc tenter de prendre du recul et regarder ce que l'on connaît déjà en informatique. Si on y réfléchi, ce problème peut se résoudre par <strong>récurrence</strong>. Je m'explique. On cherche
+					à obtenir une fonction qui nous donne le meilleur alignement de deux séquences ADN. Quand on nous donne les deux séquences, on sait que le meilleur alignement ne peut finir que de 3 manières différentes.
+				</p>
+				<ul>
+					<li>On prend la dernière lettre des deux séquences, ce qui donne un <strong>match</strong> ou une <strong>substitution</strong></li>
+					<li>On fait une <strong>délétion</strong> en haut</li>
+					<li>On fait une <strong>délétion</strong> en bas</li>
+				</ul>
+				<p></p>
+				<p>
+					Pour ceux qui préfairent un schéma, voici un exemple des trois possibilités.</p>
+
+				<img src="images/trois%2520possibilites.png" width="100%">
+
+				<p>Pour chaque un des trois cas, on va appliquer notre fonction aux séquences restantes pour calculer le <strong>score maximal</strong>, et ainsi de suite. On va donc <strong>réduire la longueur des séquences</strong> à aligner au fur et à mesure que
+					la fonction est appelée. Et ce jusqu'à ce qu'une des deux séquences soit vide. On ne pourra alors que mettre des <strong>délétions</strong> pour compléter les nucléotides restants.</p>
+
+				<p>Mathématiquement la relation de récurrence que l'on utilise est celle ci&nbsp;: </p>
+
+				<img src="images/formule_rec_ADN.png" width="100%">
+
+				<p>Ne paniquez pas si vous ne la comprenez pas directement la relation de récurence. Soit vous prenez le temps de la lire doucement, et vous verrez qu'il ne s'agit que de la traduction de ce que l'on a dit précédement. Soit vous attendez, j'ai dessiné
+					l'arbre de récurence qu'elle produit plus loin.</p>
+
+				<p><strong>Problème</strong>&nbsp;: à chaque appelle à la fonction, on appel à nouveau la fonction 3 fois. Autant le dire tout de suite, ça sent la <strong>complexité exponentielle</strong> à plein nez. Tant d'efforts pour rien&nbsp;? Moïra aurait, elle,
+					dévolu aux gènes les complexités renverse-ordinateurs&nbsp;? (#LesPerses #Eschil) Que nenni, cette relation de récurrence vaincra&nbsp;! Il suffit d'ouvrir les yeux sur notre bétise.</p>
+
+				<h2>Une impression de déjà vue</h2>
+
+				<p>Bon, ouvrir les yeux sur une relation de récurrence, ce n'est pas évident, surtout si elle est écrite sous une forme mathématique élégante, mais admettons le, <strong>peu visuelle</strong>. Et que fait on quand on ne visualise pas bien une formule
+					? On la teste \o/ ! C'est donc avec une énorme gentillesse, que je vous ai dessiné de notre <strong>arbre de récurrence</strong> pour un cas très simple mais aussi très éclairant. Enfin très simple ... il fait déjà dans les 130 lignes. Il n'est bien
+					entendu pas nécessaire de le lire en entier (cliquez sur l'image pour afficher la totalitée de l'image). Il est juste là pour vous montrer comment fonctionne cette représentation (observez le bien, il m'a fallut beaucoup de temps pour le faire ^^)</p>
+				<p>Vous pouvez entre autre remarquer qu'à chaque problème sont associés 3 sous-problèmes. Et que tous les cas terminaux (ceux qui finissent les lignes) sont tous des sous-problèmes où l'une des séquences est vide. Vous pouvez <strong>cliquer sur l'image</strong>					pour l'afficher. <strong>Attention, c'est une grosse image</strong>.</p>
+
+				<img src="images/arbre_min.svg" data-toggle="modal" data-target="#myModal">
+
+				<!-- Modal -->
+				<div id="myModal" class="modal fade" role="dialog">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h2>Arbre complet des alignements possibles</h2>
+							</div>
+							<div id="image" class="modal-body">
+								<p></p>
+								<div class="loader"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+
+
+
+
+				<p>Avez-vous remarqué quelque chose ? Non ? Normal, vous avez forcément le nez collé au dessin. Nous allons donc prendre un peu de hauteur en coupant ce dessin en trois parti pour essailler de tout faire tenir sur une page.Et pour vous facilite d'avantage
+					la tache, j'ai pris encore un peu de mon temps pour faire du coloriage. Il est temps que je vous explique pourquoi. A chaque fois que vous voyez dans le fond deux rectangles de la <strong>même couleur</strong>, c'est que ces parties de l'arbres font
+					exactement la même chose. C'est le <strong>même calcul</strong>, car les séquences qui restent à aligner sont les mêmes. S'il n'y a pas de rectangle, c'est que ce calcul n'apparait qu'une fois.</p>
+
+				<div class="row">
+					<div class="col-sm-4">
+						<img src="images/arbre_coupe1.svg" />
+					</div>
+					<div class="col-sm-4">
+						<img src="images/arbre_coupe2.svg" />
+					</div>
+					<div class="col-sm-4">
+						<img src="images/arbre_coupe3.svg" />
+					</div>
+				</div>
+
+				<p>Si vous n'avez pas compris ce que je viens de dire, voici quelques exemples. Vous pouvez aller vérifier juste au dessus. A chaque fois qu'il y a un rectangle <strong>vert pâle</strong>, c'est que l'on cherche à maximiser l'alignement entre <strong>A et A</strong>.
+					Les <strong>bleu clair</strong> correspondent à l'alignement de <strong>ACG et A</strong>. Les <strong>jaunes</strong> correspondent à l'alignement de <strong>ACG et AG</strong>. Et ainsi de suite.
+					<br/> Conclusion, on peut voir sur ce dessin que l'on calcule :</p>
+				<ul>
+					<li><strong>25 fois</strong> l'alignement de <strong>A</strong> et <strong>A</strong></li>
+					<li><strong>5 fois</strong> l'alignement de <strong>ACG</strong> et <strong>A</strong></li>
+					<li><strong>3 fois</strong> l'alignement de <strong>ACG</strong> et <strong>AG</strong></li>
+				</ul>
+				<p>Et encore, là c'est parce que j'ai eu pitié du logiciel de dessin. Car avec des séquences ADN comportant des centaines de nucléotïdes (ici elles font seulement 4 et 3 nucléotïdes), calculer plusieurs fois la même chose risque vite de devenir l'enfer.
+					Bref, il faut mettre un terme à ce gaspillage grossier de <strong>capacité de calcul</strong>.&nbsp;Mais en échange, il va falloir qu'on stock les résultats quelque part. On va diminuer la <strong>complexité en temps</strong>, mais en échange, nous
+					allons devoir augmenter la <strong>complexité en mémoire</strong>. Cette phrase vous parait obscure ? Pas de panique, vous l'aurez comprise à la fin du prochain paragraphe.
+				</p>
+
+				<h2>La mémoïzation à la rescousse</h2>
+
+				<p>Si on <strong>mémorise les résultats des sous problèmes</strong>, on aura besoin de calculer les résultats qu'une seule fois. Du coup, on calculera une fois l'arbre associé à l'alignement de A et A. Et à chaque fois que l'on aura besoin d'aligner
+					A et A, on aura juste à aller chercher son score maximal en mémoire. De même pour l'alignement de ACG et A ou de ACG et AG. Du coup, dans notre arbre, on verra <strong>un seul gros rectangle jaune</strong>. Puis quand on retombera sur un rectangle
+					jaune, inutile de calculer l'arbre qui est à l'intérieur, on a déjà la réponse en mémoire.
+					<br/> Vous pouvez voir le résultat de cette simplification sur l'arbre ci-dessous. C'est le même calcul qu'avant, sauf que j'ai supprimé tous les sous-arbre devenus inutiles. Plutôt efficace comme élagage, vous ne trouvez pas ?</p>
+
+
+				<img src="images/arbre_elague.png" style="width:50%;">
+
+				<p>Dire que l'on va mémoriser les résultats c'est bien beau. Mais pour ça, il nous faut une méthode pratique/rapide pour mémoriser le score de nos <strong>sous-problèmes</strong> en mémoire. Pour commencer, il faut savoir combien de sous-problèmes nous
+					devrons mémoriser. En gros, nos sous problèmes consistent à trouver le meilleur alignement pour deux <strong>séquences génétiques</strong> plus petites que les deux séquences initiales. Par exemple, si au début une des séquences est «&nbsp;ACGTCG&nbsp;»
+					les <strong>sous-séquences</strong> seront «&nbsp;ACGTCG&nbsp;», «&nbsp;ACGTC&nbsp;», «&nbsp;ACGT&nbsp;», «&nbsp;ACG&nbsp;», «&nbsp;AC&nbsp;», «&nbsp;A&nbsp;» et «&nbsp;&nbsp;»</p>
+
+				<p>Si les deux <strong>séquences</strong> contiennent n et m nucléoïdes, il y a donc (n+1) <strong>sous-séquences</strong> pour la première, et (m+1) <strong>sous-séquences</strong> pour la seconde séquence. En les combinant, on obtient un total de (n+1)(m+1)
+					<strong>sous-problèmes</strong>. Ce qui se rangera facilement dans un tableau de n+1 lignes et m+1 colonnes.</p>
+
+				<p>C'est fou&nbsp;! On vient de partir d'une <strong>relation de récurrence</strong> qui nous demande de faire des tas et des tas de calculs, et on obtient un simple tableau à remplir.</p>
+
+				<p>Si vous ne voyez pas comment utiliser le tableau, voici un exemple de comment mémoriser les scores dans le tableau. C'est compliqué à expliquer avec de mots, mais vous devriez comprendre avec le dessin. Il vous suffit de passer votre souris par dessus
+					une case pour voir à quel <strong>sous-problème</strong> correspond cette case.</p>
+
+
+
+
+
+
+
+
+
+
+				<canvas id="exemple_grille" width="600px" height="400px" style="text-align: center; display:block; margin:auto;">></canvas>
+				<p style="text-align: center;">le sous problème consiste à aligner <br><span id="ADN1_exemple" style="color:blue;">ACGTCG</span> et <span id="ADN2_exemple" style="color:blue;">ACGTA</span></p>
+
+				<script type="text/javascript">
+					var tab_exemple = new Tableau_ADN("exemple_grille", 5, 5, 590, 390);
+					tab_exemple.creer("ACGTCG", "ACGTA");
+					var can_exemple = document.getElementById("exemple_grille");
+
+					var adn1_rep = document.getElementById("ADN1_exemple");
+					var adn2_rep = document.getElementById("ADN2_exemple");
+
+					var ligne;
+					var colonne;
+
+					var ligne_prec = -1;
+					var colonne_prec = -1;
+
+					var sub_adn1;
+					var sub_adn2;
+
+					function souris_mouvement(e) {
+						var rect = can_exemple.getBoundingClientRect(); //objet DOM qui correspond au rectangle entourant le canvas
+						var x = (e.clientX - rect.left) * 600 / can_exemple.offsetWidth;
+						var y = (e.clientY - rect.top) * 400 / can_exemple.offsetHeight;
+						if (x > tab_exemple.x0 + tab_exemple.dx && y > tab_exemple.y0 + tab_exemple.dy) {
+
+							colonne = Math.round((x - tab_exemple.x0 - tab_exemple.dx) / tab_exemple.dx);
+							ligne = Math.round((y - tab_exemple.y0 - tab_exemple.dy) / tab_exemple.dy);
+
+							if ((x - tab_exemple.x0 - tab_exemple.dx) / tab_exemple.dx - colonne < 0) {
+								colonne--;
+							}
+							if ((y - tab_exemple.y0 - tab_exemple.dy) / tab_exemple.dy - ligne < 0) {
+								ligne--;
+							}
+
+							if (ligne <= tab_exemple.ADN2.length && colonne <= tab_exemple.ADN1.length && ligne >= 0 && colonne >= 0) {
+								if (ligne_prec != ligne || colonne_prec != colonne) {
+									//alert(ligne_prec+" ,"+colonne_prec+" // "+ ligne +' , '+ colonne);
+									tab_exemple.encercler(true, ligne, colonne, "blue", ""); //nouvelle case
+									tab_exemple.encercler(true, ligne_prec, colonne_prec, "", ""); //ancienne case
+
+									var n = Math.max(0, Math.min(colonne, colonne_prec));
+									var m = Math.max(colonne, colonne_prec);
+
+									for (var j = n; j <= m; j++) {
+										if (j <= colonne) {
+											tab_exemple.retracer_lettre(-1, j + 1, "blue");
+										} else {
+											tab_exemple.retracer_lettre(-1, j + 1, "black");
+										}
+
+									}
+
+									var n = Math.max(0, Math.min(ligne, ligne_prec));
+									var m = Math.max(ligne, ligne_prec);
+									for (var j = n; j <= m; j++) {
+										if (j <= ligne) {
+											tab_exemple.retracer_lettre(j + 1, -1, "blue");
+										} else {
+											tab_exemple.retracer_lettre(j + 1, -1, "black");
+										}
+
+									}
+
+
+									ligne_prec = ligne;
+									colonne_prec = colonne;
+
+									sub_adn1 = tab_exemple.ADN1.substring(0, colonne);
+									if (sub_adn1 == "") {
+										sub_adn1 = "_";
+									}
+									sub_adn2 = tab_exemple.ADN2.substring(0, ligne);
+									if (sub_adn2 == "") {
+										sub_adn2 = "_";
+									}
+
+									adn1_rep.innerHTML = sub_adn1;
+									adn2_rep.innerHTML = sub_adn2;
+								}
+
+							}
+						}
+					}
+
+
+					can_exemple.addEventListener('mousemove', souris_mouvement, false);
+
+					tab_exemple.encercler(true, tab_exemple.ADN2.length, tab_exemple.ADN1.length, "blue", "");
+					ligne_prec = tab_exemple.ADN2.length;
+					colonne_prec = tab_exemple.ADN1.length;
+
+					for (var j = 0; j <= ligne_prec; j++) {
+						tab_exemple.retracer_lettre(j + 1, -1, "blue");
+					}
+					for (var j = 0; j <= colonne_prec; j++) {
+						tab_exemple.retracer_lettre(-1, j + 1, "blue");
+					}
+					adn1_rep.innerHTML = tab_exemple.ADN1;
+					adn2_rep.innerHTML = tab_exemple.ADN2;
+				</script>
+
+
+
+
+
+				<h2>Relation de récurrence nouvelle version</h2>
+
+				<p>Bon, on sait maintenant qu'on peut aller beaucoup plus vite en mémorisant nos résultats dans un tableau. Mais il nous reste à <strong>adapter notre relation de récurrence au tableau</strong>. On a fait assez de théorie, donc on va passer directement
+					à un exemple. Trouver la relation de récurrence pour «&nbsp;ACGTC&nbsp;» et «&nbsp;AGGA&nbsp;» Comme pour notre première fonction, on a 3 possibilités qui donnent les relations dessinées ci-dessous, représentées chacune d'une couleur particulière.</p>
+
+				<img src="images/recurence%2520tableau.png" width="100%">
+
+
+				<p>Les deux <strong>délétions</strong> seront toujours des <strong>délétions</strong>. Par contre, la troisième relation peut être soit un <strong>match</strong>, soit une <strong>substitution</strong>. On aura un match si les lettres associées à la
+					ligne et à la colonne sont les mêmes, et une substitution dans le cas contraire.</p>
+
+				<p>Reste le cas de <strong>l'initialisation</strong>. La première ligne et la première colonne, où l'on ne peut pas appliquer notre relation de récurrence habituelle. Ce n'est pas vraiment ce qu'il y a de plus compliqué. Car pour aligner une séquence
+					avec rien, on ne peut faire que des <strong>délétions</strong>. Ce qui va assez vite à calculer.
+				</p>
+				<p>On peut remarquer, que pour calculer un score, il faut en connaître déjà 3. Celui situé en <strong>haut</strong>, celui à <strong>gauche</strong> et celui en <strong>haut à gauche</strong>. Du coup, après avoir rempli la première ligne et la première
+					colonne. Avec notre relation de récurrence, on peut compléter le tableau ligne par ligne, ou colonne par colonne, ou en diagonale. Voici un schéma des 3 chemins de base à suivre pour calculer l'ensemble du tableau. Vous pouvez bien sûr faire des
+					chemins plus étranges si ça vous amuse tant que ça vous pouvez appliquer la relation de récurence.</p>
+
+				<img src="images/parcour%2520tableau.png" width="100%">
+
+				<p>Conclusions, on a maintenant tous les <strong>sous-problèmes</strong> possibles calculés. Remarquez au passage qu'on a inversé l'ordre de résolution. Avant on partait des deux séquences à aligner, et on simplifiait le problème en sous-problèmes, ce
+					qui ne fonctionnait pas. Et là, on est parti de rien, pour calculer petit à petit des sous-problèmes de plus en plus gros jusqu'à atteindre le problème demandé.
+				</p>
+
+				<p>On connaît donc le <strong>score maximal</strong> qu'un alignement peut obtenir. Si vous avez suivi, vous savez que c'est le score trouvé dans la case tout en bas à droite du tableau. Mais il n'est pas marqué <strong>comment on obtient ce score optimal</strong>.
+					Pas marqué ? Vous êtes sur ? Disons que ce n'est pas écrit explicitement, mais cela se retrouve très facilement en faisant le chemin inverse.</p>
+
+				<p>Je m'explique. Pour obtenir ce <strong>score maximal</strong>, on ne peut venir que de <strong>3 sous-problèmes</strong>. En appliquant l'algorithme dans l'autre sens, on sait de <strong>quel(s) sous-problème(s)</strong> vient notre score maximal.
+					On peut ainsi remonter tout le tableau, et donc trouver l'alignement correspondant. Remarquez au passage que la solution optimale d'un sous-problème peut venir de plusieurs sous-problèmes. En effet, il n'y a pas forcément un seul alignement optimal,
+					il peut y en avoir plusieurs. Et cet algorithme les donne tous, ce qui n'est plutôt pas mal.</p>
+
+
+
+
+				<div class="animation">
+					<canvas id="test" width="700px" height="600px" style="width:58%; display:inline-block;"></canvas>
+					<canvas id="demo" width="500px" height="600px" style="width:41%; display:inline-block; background-color:white;"></canvas>
+
+
+
+					<script type="text/javascript">
+						var tableau = new Tableau_ADN("test", 5, 5, 690, 590);
+
+						tableau.creer("GAGCATCATCG", "CTAGCAGTCA");
+
+						var algo = new Algorithme_ADN("demo", 5, 5, 490, 590, tableau);
+
+
+						document.addEventListener('keydown', function(e) {
+							if (e.keyCode == 39) {
+								algo.next();
+							}
+							if (e.keyCode == 37) {
+								algo.precedant();
+							}
+						});
+					</script>
+
+					<button type="button" onclick="algo.modifier_vitesse(1);">normal</button>
+					<button type="button" onclick="algo.modifier_vitesse(2);">sans commentaire</button>
+					<button type="button" onclick="algo.modifier_vitesse(3);">acéléré</button>
+					<button type="button" onclick="algo.modifier_vitesse(4);">trés accéléré</button>
+
+					<br>
+
+					<input name="ADN1" id="ADN1" value="GAGCATCATCG" type="text">
+					<input name="ADN2" id="ADN2" value="CTAGCAGTCA" type="text">
+
+					<button type="button" onclick="algo.changer_ADN(document.getElementById('ADN1').value , document.getElementById('ADN2').value);">Appliquer</button>
+
+				</div>
+
+
+			</article>
+		</div>
+	</div>
+
+	<footer class="container-fluid">
+		
+		<div class="row">
+			<div class="col-sm-4">
+				<p>
+					Auteur <br/> Alexandre Fauquette
+				</p>
+			</div>
+
+			<div class="col-sm-4">
+				<p>
+					Contact <br/> algo.pour.tous (at) gmail [dot] com
+				</p>
+			</div>
+
+			<div class="col-sm-4">
+				<p>
+					Hebergement <br/> <a href="http://www.rezomen.fr">Supélec Rezo</a>
+				</p>
+			</div>
+		</div>
+		
+	</footer>
+
+
+
+	<script>
+		$(document).ready(function() {
+			$('[data-toggle="modal"]').click(function() {
+				var img = $("<img />").attr('src', 'images/arbre.svg').on('load', function() {
+
+					if (!this.complete || typeof this.naturalWidth == "undefined" || this.naturalWidth == 0) {
+						$('#image p').text("Problem happend :(");
+					} else {
+						$("#image").append(img);
+						$('#image .loader').hide();
+					}
+				});
+			});
+		});
+	</script>
+
+</body>
+
+</html>
